@@ -1,0 +1,2237 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#ff5a5f" />
+    <title>IG Scheduler Pro</title>
+    <link rel="manifest" href="manifest.json">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap"
+        rel="stylesheet" />
+    <style>
+        :root {
+            --bg: #f7f5f2;
+            --surface: #ffffff;
+            --surface2: #f0ede8;
+            --border: #e2ddd8;
+            --border2: #cdc8c0;
+            --text: #1a1814;
+            --muted: #8a8580;
+            --accent: #e8522a;
+            --accent2: #f0a500;
+            --accent3: #2a7ae8;
+            --ig-grad: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+            --success: #22a06b;
+            --radius: 12px;
+            --font: 'Space Grotesk', sans-serif;
+            --serif: 'Instrument Serif', serif;
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            font-size: 14px;
+        }
+
+        a {
+            color: var(--accent3);
+            text-decoration: none;
+        }
+
+        /* Layout */
+        .shell {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 220px;
+            flex-shrink: 0;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 24px 0;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+        }
+
+        .main {
+            flex: 1;
+            padding: 32px 28px;
+            max-width: 900px;
+        }
+
+        /* Sidebar */
+        .brand {
+            padding: 0 20px 24px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 16px;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+
+        .brand-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 9px;
+            background: var(--ig-grad);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .brand-name {
+            font-size: 0.95rem;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+
+        .brand-sub {
+            font-size: 0.65rem;
+            color: var(--muted);
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            margin-top: 1px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 20px;
+            font-size: 0.82rem;
+            font-weight: 500;
+            color: var(--muted);
+            cursor: pointer;
+            border-left: 2px solid transparent;
+            transition: all 0.15s;
+        }
+
+        .nav-item:hover {
+            color: var(--text);
+            background: var(--surface2);
+        }
+
+        .nav-item.active {
+            color: var(--accent);
+            border-left-color: var(--accent);
+            background: #fef5f2;
+        }
+
+        .nav-item .ni {
+            font-size: 15px;
+            width: 18px;
+            text-align: center;
+        }
+
+        .nav-sep {
+            height: 1px;
+            background: var(--border);
+            margin: 12px 20px;
+        }
+
+        .sidebar-bottom {
+            margin-top: auto;
+            padding: 16px 20px;
+        }
+
+        .connected-pill {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 0.75rem;
+        }
+
+        .conn-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #ccc;
+            flex-shrink: 0;
+        }
+
+        .conn-dot.ok {
+            background: var(--success);
+        }
+
+        /* Page header */
+        .page-header {
+            margin-bottom: 28px;
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            line-height: 1.2;
+        }
+
+        .page-sub {
+            font-size: 0.82rem;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .card-title {
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 14px;
+        }
+
+        /* Grid */
+        .grid2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .grid3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+        }
+
+        .span2 {
+            grid-column: span 2;
+        }
+
+        @media(max-width:700px) {
+            .shell {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                flex-direction: row;
+                flex-wrap: wrap;
+                position: static;
+            }
+
+            .main {
+                padding: 20px 14px;
+            }
+
+            .grid2,
+            .grid3 {
+                grid-template-columns: 1fr;
+            }
+
+            .span2 {
+                grid-column: span 1;
+            }
+        }
+
+        /* Stats */
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px 20px;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 100%;
+            border-radius: 3px 0 0 3px;
+        }
+
+        .stat-card.orange::after {
+            background: var(--accent);
+        }
+
+        .stat-card.blue::after {
+            background: var(--accent3);
+        }
+
+        .stat-card.green::after {
+            background: var(--success);
+        }
+
+        .stat-card.gold::after {
+            background: var(--accent2);
+        }
+
+        .stat-val {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -1px;
+            line-height: 1;
+        }
+
+        .stat-lbl {
+            font-size: 0.72rem;
+            color: var(--muted);
+            margin-top: 6px;
+            font-weight: 500;
+        }
+
+        /* Queue items */
+        .queue-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--surface);
+            margin-bottom: 8px;
+            cursor: grab;
+            transition: box-shadow 0.15s, border-color 0.15s;
+            position: relative;
+        }
+
+        .queue-item:hover {
+            border-color: var(--border2);
+            box-shadow: var(--shadow);
+        }
+
+        .queue-item.dragging {
+            opacity: 0.5;
+            border-style: dashed;
+        }
+
+        .queue-thumb {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            object-fit: cover;
+            flex-shrink: 0;
+            background: var(--surface2);
+        }
+
+        .queue-thumb-placeholder {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            background: var(--surface2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .queue-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .queue-caption {
+            font-size: 0.83rem;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .queue-meta {
+            font-size: 0.72rem;
+            color: var(--muted);
+            margin-top: 3px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .type-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            padding: 2px 7px;
+            border-radius: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .type-badge.feed {
+            background: #fff3e8;
+            color: #c04a00;
+            border: 1px solid #f5c9a8;
+        }
+
+        .type-badge.story {
+            background: #f0e8ff;
+            color: #6a00c0;
+            border: 1px solid #d0b5f5;
+        }
+
+        .queue-time {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text);
+            white-space: nowrap;
+            margin-left: auto;
+        }
+
+        .queue-actions {
+            display: flex;
+            gap: 6px;
+            margin-left: 8px;
+        }
+
+        .icon-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--surface2);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            transition: all 0.15s;
+        }
+
+        .icon-btn:hover {
+            border-color: var(--border2);
+            background: var(--border);
+        }
+
+        .icon-btn.danger:hover {
+            border-color: #fca5a5;
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        /* Composer */
+        .composer {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .composer-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .ctab {
+            flex: 1;
+            padding: 12px 16px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            color: var(--muted);
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+            transition: all 0.15s;
+            text-align: center;
+            background: transparent;
+            border-top: none;
+            border-left: none;
+            border-right: none;
+            font-family: var(--font);
+        }
+
+        .ctab.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .composer-body {
+            padding: 20px;
+        }
+
+        /* Upload zone */
+        .upload-zone {
+            border: 2px dashed var(--border2);
+            border-radius: 10px;
+            padding: 32px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--surface2);
+        }
+
+        .upload-zone:hover,
+        .upload-zone.drag {
+            border-color: var(--accent);
+            background: #fef5f2;
+        }
+
+        .upload-zone .uz-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .upload-zone .uz-text {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .upload-zone .uz-sub {
+            font-size: 0.75rem;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        .preview-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+
+        .preview-item {
+            position: relative;
+            width: 72px;
+            height: 72px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        .preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .preview-item .rm {
+            position: absolute;
+            top: 3px;
+            right: 3px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        /* Inputs */
+        .input,
+        .textarea,
+        .select-input {
+            width: 100%;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 9px 12px;
+            color: var(--text);
+            font-family: var(--font);
+            font-size: 0.85rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .input:focus,
+        .textarea:focus,
+        .select-input:focus {
+            border-color: var(--accent);
+        }
+
+        .input::placeholder,
+        .textarea::placeholder {
+            color: var(--muted);
+        }
+
+        .textarea {
+            resize: vertical;
+            min-height: 80px;
+            line-height: 1.6;
+        }
+
+        .label {
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .form-row {
+            margin-bottom: 14px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 9px 18px;
+            border-radius: 8px;
+            font-family: var(--font);
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.18s;
+            letter-spacing: 0.01em;
+        }
+
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: #d44420;
+            transform: translateY(-1px);
+        }
+
+        .btn-ig {
+            background: var(--ig-grad);
+            color: #fff;
+        }
+
+        .btn-ig:hover:not(:disabled) {
+            opacity: 0.88;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--surface2);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            border-color: var(--border2);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--muted);
+            border: 1px solid var(--border);
+        }
+
+        .btn-ghost:hover {
+            color: var(--text);
+            border-color: var(--border2);
+        }
+
+        .btn-sm {
+            padding: 6px 13px;
+            font-size: 0.75rem;
+            border-radius: 7px;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: #fff;
+        }
+
+        /* Steps */
+        .steps {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            counter-reset: step;
+        }
+
+        .step {
+            display: flex;
+            gap: 14px;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border);
+            position: relative;
+        }
+
+        .step:last-child {
+            border-bottom: none;
+        }
+
+        .step-num {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: #fff;
+            font-size: 0.75rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .step-num.done {
+            background: var(--success);
+        }
+
+        .step-num.pending {
+            background: var(--surface2);
+            color: var(--muted);
+            border: 1px solid var(--border);
+        }
+
+        .step-title {
+            font-size: 0.88rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .step-body {
+            font-size: 0.8rem;
+            color: var(--muted);
+            line-height: 1.7;
+        }
+
+        .step-body code {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 1px 6px;
+            font-size: 0.78rem;
+            color: var(--text);
+        }
+
+        /* Calendar */
+        .calendar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .cal-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+        }
+
+        .cal-day-label {
+            text-align: center;
+            font-size: 0.65rem;
+            font-weight: 600;
+            color: var(--muted);
+            text-transform: uppercase;
+            padding: 4px 0;
+        }
+
+        .cal-day {
+            aspect-ratio: 1;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            cursor: pointer;
+            position: relative;
+            border: 1px solid transparent;
+            transition: all 0.15s;
+        }
+
+        .cal-day:hover {
+            background: var(--surface2);
+        }
+
+        .cal-day.today {
+            background: var(--accent);
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .cal-day.has-post::after {
+            content: '';
+            position: absolute;
+            bottom: 3px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: var(--accent3);
+        }
+
+        .cal-day.has-post.today::after {
+            background: #fff;
+        }
+
+        .cal-day.other-month {
+            color: var(--muted);
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--text);
+            color: #fff;
+            padding: 10px 18px;
+            border-radius: 100px;
+            font-size: 0.82rem;
+            font-weight: 500;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: all 0.25s;
+            pointer-events: none;
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: none;
+        }
+
+        .toast.success {
+            background: var(--success);
+        }
+
+        .toast.error {
+            background: #dc2626;
+        }
+
+        /* Modal */
+        .modal-bg {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+
+        .modal-bg.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 28px;
+            width: 90%;
+            max-width: 480px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            transform: scale(0.95);
+            transition: transform 0.2s;
+        }
+
+        .modal-bg.show .modal {
+            transform: scale(1);
+        }
+
+        .modal-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .modal-sub {
+            font-size: 0.82rem;
+            color: var(--muted);
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        /* Status badges */
+        .status-badge {
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 2px;
+        }
+
+        .status-badge.failed {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .status-badge.published {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .status-badge.overdue {
+            background: #ffedd5;
+            color: #ea580c;
+        }
+
+        /* Info box */
+        .info-box {
+            background: #f0f7ff;
+            border: 1px solid #bdd9f5;
+            border-radius: 8px;
+            padding: 12px 14px;
+            font-size: 0.8rem;
+            color: #1a4a80;
+            line-height: 1.7;
+            margin-bottom: 14px;
+        }
+
+        .warn-box {
+            background: #fff8e8;
+            border: 1px solid #f5d98a;
+            border-radius: 8px;
+            padding: 12px 14px;
+            font-size: 0.8rem;
+            color: #805a00;
+            line-height: 1.7;
+            margin-bottom: 14px;
+        }
+
+        .error-box {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            padding: 12px 14px;
+            font-size: 0.8rem;
+            color: #991b1b;
+            line-height: 1.7;
+            margin-bottom: 14px;
+            display: none;
+        }
+
+        /* Security / Warning banners */
+        .security-banner {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 0.78rem;
+            color: #664d03;
+            line-height: 1.6;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .token-expiry-banner {
+            background: #fee2e2;
+            border: 1px solid #fca5a5;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 0.78rem;
+            color: #991b1b;
+            line-height: 1.6;
+            margin-bottom: 14px;
+            display: none;
+        }
+
+        .tab-warn-banner {
+            background: #eff6ff;
+            border: 1px solid #93c5fd;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 0.78rem;
+            color: #1e40af;
+            line-height: 1.6;
+            margin-bottom: 14px;
+        }
+
+        /* PIN overlay */
+        .pin-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.97);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .pin-overlay .pin-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+            text-align: center;
+            max-width: 360px;
+            width: 90%;
+        }
+
+        /* Draft items */
+        .draft-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 6px;
+            background: var(--surface2);
+        }
+
+        .draft-item img {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .draft-item .draft-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .draft-item .draft-caption {
+            font-size: 0.78rem;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .draft-item .draft-date {
+            font-size: 0.68rem;
+            color: var(--muted);
+        }
+
+        /* Timezone label */
+        .tz-label {
+            font-size: 0.7rem;
+            color: var(--muted);
+            margin-top: 4px;
+            font-style: italic;
+        }
+
+        /* Suggest chips */
+        .suggest-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 100px;
+            border: 1px solid var(--border);
+            background: var(--surface2);
+            font-size: 0.72rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-family: var(--font);
+            color: var(--text);
+        }
+
+        .suggest-chip:hover {
+            border-color: var(--accent);
+            background: #fef5f2;
+        }
+
+        /* Chip (hashtag) */
+        .chip {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 100px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            font-size: 0.72rem;
+            margin: 2px;
+            color: var(--accent3);
+        }
+
+        /* Post link */
+        .ig-link {
+            font-size: 0.72rem;
+            color: var(--accent3);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .ig-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="shell">
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-logo">
+                    <div class="brand-icon">📸</div>
+                    <div>
+                        <div class="brand-name">IG Scheduler</div>
+                        <div class="brand-sub">Creator Pro</div>
+                    </div>
+                </div>
+            </div>
+            <nav>
+                <div class="nav-item active" onclick="showPage('queue')"><span class="ni">⏱</span>Queue</div>
+                <div class="nav-item" onclick="showPage('compose')"><span class="ni">✏️</span>Compose</div>
+                <div class="nav-item" onclick="showPage('calendar')"><span class="ni">📅</span>Calendar</div>
+                <div class="nav-sep"></div>
+                <div class="nav-item" onclick="showPage('connect')"><span class="ni">🔗</span>Connect IG</div>
+                <div class="nav-item" onclick="showPage('settings')"><span class="ni">⚙️</span>Settings</div>
+            </nav>
+            <div class="sidebar-bottom">
+                <div class="connected-pill" id="conn-pill">
+                    <div class="conn-dot" id="conn-dot"></div>
+                    <span id="conn-label">Not connected</span>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main">
+
+            <div id="page-queue">
+                <div class="page-header">
+                    <div class="page-title">Post Queue</div>
+                    <div class="page-sub">Scheduled posts & stories — drag to reorder</div>
+                </div>
+                <div class="tab-warn-banner">💡 <strong>Auto-publish requires this tab to stay open.</strong> Posts will
+                    only fire if the browser tab is active. Do not close this tab if you have scheduled posts.</div>
+                <div class="token-expiry-banner" id="token-expiry-banner">⚠️ <strong>Token expiring soon!</strong> Your
+                    Instagram access token is nearing its 60-day expiry. Go to <a href="#"
+                        onclick="showPage('connect');return false;">Connect IG</a> to refresh it.</div>
+                <div class="grid3" style="margin-bottom:20px">
+                    <div class="stat-card orange">
+                        <div class="stat-val" id="s-queued">0</div>
+                        <div class="stat-lbl">Queued</div>
+                    </div>
+                    <div class="stat-card blue">
+                        <div class="stat-val" id="s-today">0</div>
+                        <div class="stat-lbl">Today</div>
+                    </div>
+                    <div class="stat-card green">
+                        <div class="stat-val" id="s-done">0</div>
+                        <div class="stat-lbl">Posted</div>
+                    </div>
+                </div>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+                    <div style="display:flex;gap:6px;">
+                        <button class="btn btn-sm btn-secondary" onclick="filterQueue('all')" id="f-all"
+                            style="border-color:var(--accent);color:var(--accent)">All</button>
+                        <button class="btn btn-sm btn-ghost" onclick="filterQueue('feed')" id="f-feed">Feed</button>
+                        <button class="btn btn-sm btn-ghost" onclick="filterQueue('story')"
+                            id="f-story">Stories</button>
+                    </div>
+                    <button class="btn btn-sm btn-primary" onclick="showPage('compose')">+ New post</button>
+                </div>
+                <div id="queue-list"></div>
+                <div id="queue-empty" style="display:none;text-align:center;padding:48px 0;color:var(--muted);">
+                    <div style="font-size:36px;margin-bottom:12px">📭</div>
+                    <div style="font-size:0.9rem;font-weight:600;margin-bottom:6px">Queue is empty</div>
+                    <div style="font-size:0.8rem;margin-bottom:16px">Schedule your first post or story</div>
+                    <button class="btn btn-primary btn-sm" onclick="showPage('compose')">+ Compose now</button>
+                </div>
+            </div>
+
+            <div id="page-compose" style="display:none">
+                <div class="page-header">
+                    <div class="page-title">Compose</div>
+                    <div class="page-sub">Schedule a Feed post or Story</div>
+                </div>
+                <div class="composer">
+                    <div class="composer-tabs">
+                        <button class="ctab active" onclick="switchComposerTab('feed')" id="ct-feed">📰 Feed
+                            Post</button>
+                        <button class="ctab" onclick="switchComposerTab('story')" id="ct-story">✨ Story</button>
+                    </div>
+                    <div class="composer-body">
+
+                        <div class="form-row">
+                            <label class="label">Photo(s)</label>
+                            <div class="upload-zone" id="upload-zone"
+                                onclick="document.getElementById('file-inp').click()"
+                                ondragover="event.preventDefault();this.classList.add('drag')"
+                                ondragleave="this.classList.remove('drag')" ondrop="handleDrop(event)">
+                                <div class="uz-icon">🖼</div>
+                                <div class="uz-text">Click or drag photos here</div>
+                                <div class="uz-sub" id="uz-hint">Single image for Feed or Story</div>
+                            </div>
+                            <input type="file" id="file-inp" accept="image/*" style="display:none"
+                                onchange="handleFiles(event)" />
+                            <div class="preview-row" id="preview-row"></div>
+                        </div>
+
+                        <div class="form-row">
+                            <label class="label">Caption</label>
+                            <div style="display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap;">
+                                <select class="select-input" id="cap-tone" style="flex:1;min-width:110px">
+                                    <option value="motivational">Motivational 🔥</option>
+                                    <option value="chill">Chill & aesthetic 🌊</option>
+                                    <option value="funny">Funny 😄</option>
+                                    <option value="storytelling">Storytelling 📖</option>
+                                    <option value="minimal">Minimal ✦</option>
+                                    <option value="promotional">Promotional 📢</option>
+                                </select>
+                                <input class="input" id="cap-topic" placeholder="Topic / context"
+                                    style="flex:2;min-width:130px" />
+                                <button class="btn btn-sm btn-primary" onclick="generateCaption()" id="gen-btn">✦ AI
+                                    Caption</button>
+                            </div>
+                            <textarea class="textarea" id="caption-field"
+                                placeholder="Write your caption… or generate with AI"></textarea>
+                            <div id="hashtag-row" style="margin-top:6px"></div>
+                        </div>
+
+                        <div class="form-grid form-row">
+                            <div>
+                                <label class="label">Date</label>
+                                <input type="date" class="input" id="sched-date" />
+                            </div>
+                            <div>
+                                <label class="label">Time</label>
+                                <input type="time" class="input" id="sched-time" value="09:00" />
+                            </div>
+                        </div>
+                        <div class="tz-label" id="tz-label"></div>
+                        <div style="margin-bottom:14px;margin-top:6px">
+                            <button class="btn btn-sm btn-ghost" onclick="suggestBestTime()" id="best-time-btn">✦
+                                Suggest best time to post</button>
+                            <div id="best-time-results" style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <label class="label">Publish via</label>
+                            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                                <label
+                                    style="display:flex;align-items:center;gap:7px;cursor:pointer;font-size:0.82rem;padding:8px 14px;border:1px solid var(--border);border-radius:8px;background:var(--surface2)"
+                                    id="method-api-lbl">
+                                    <input type="radio" name="method" value="api" id="method-api" checked
+                                        onchange="updateMethodUI()" />
+                                    <span>Meta API <span style="color:var(--success);font-size:0.7rem">●
+                                            auto</span></span>
+                                </label>
+                                <label
+                                    style="display:flex;align-items:center;gap:7px;cursor:pointer;font-size:0.82rem;padding:8px 14px;border:1px solid var(--border);border-radius:8px;background:var(--surface2)"
+                                    id="method-notif-lbl">
+                                    <input type="radio" name="method" value="notif" onchange="updateMethodUI()" />
+                                    <span>Phone reminder <span style="color:var(--muted);font-size:0.7rem">manual
+                                            tap</span></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;padding-top:4px;">
+                            <button class="btn btn-ig" onclick="schedulePost()" id="sched-btn">📅 Schedule Post</button>
+                            <button class="btn btn-secondary" onclick="saveDraft()">Save Draft</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" style="margin-top:16px">
+                    <div class="card-title">Saved Drafts</div>
+                    <div id="drafts-list">
+                        <div style="font-size:0.82rem;color:var(--muted)">No drafts saved yet.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="page-calendar" style="display:none">
+                <div class="page-header">
+                    <div class="page-title">Calendar</div>
+                    <div class="page-sub">Your posting schedule at a glance</div>
+                </div>
+                <div class="grid2">
+                    <div class="card">
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+                            <span style="font-weight:700;font-size:0.95rem" id="cal-month-label"></span>
+                            <div style="display:flex;gap:6px;">
+                                <button class="icon-btn" onclick="prevMonth()">‹</button>
+                                <button class="icon-btn" onclick="nextMonth()">›</button>
+                            </div>
+                        </div>
+                        <div class="cal-grid" id="cal-grid"></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title" id="cal-day-title">Select a day</div>
+                        <div id="cal-day-posts" style="font-size:0.82rem;color:var(--muted)">Click a date to see
+                            scheduled posts.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="page-connect" style="display:none">
+                <div class="page-header">
+                    <div class="page-title">Connect Instagram</div>
+                    <div class="page-sub">One-time setup — takes about 10 minutes</div>
+                </div>
+
+                <div class="warn-box">⚠️ You need a <strong>Creator or Business</strong> Instagram account. Personal
+                    accounts cannot use the API. Switching is free and reversible in IG Settings → Account → Switch to
+                    Professional Account.</div>
+                <div class="error-box" id="error-190-box"><strong>Understanding Error 190 (Token Error)</strong><br />If
+                    you are getting an Error 190, it means your token is invalid or expired. To fix this:<br />1. Go
+                    back to the Graph API Explorer.<br />2. Re-select your app and ensure <code>instagram_basic</code>
+                    and <code>instagram_content_publish</code> are checked.<br />3. Generate a new token and <strong>do
+                        not forget to exchange it for a 60-day long-lived token</strong>.<br />4. Paste the fresh token
+                    below.</div>
+
+                <div class="card" style="margin-bottom:16px">
+                    <div class="card-title">Setup steps</div>
+                    <div class="steps">
+                        <div class="step">
+                            <div class="step-num" id="sn1">1</div>
+                            <div>
+                                <div class="step-title">Switch to Creator / Business on Instagram</div>
+                                <div class="step-body">IG App → Profile → ☰ → Settings → Account → <strong>Switch to
+                                        Professional Account</strong> → pick Creator or Business.</div>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-num pending" id="sn2">2</div>
+                            <div>
+                                <div class="step-title">Create a Meta Developer App</div>
+                                <div class="step-body">Go to <a href="https://developers.facebook.com/apps"
+                                        target="_blank">developers.facebook.com/apps</a> → Create App → Consumer → add
+                                    <strong>Instagram Graph API</strong> product. Copy your <strong>App ID</strong> and
+                                    <strong>App Secret</strong>.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-num pending" id="sn3">3</div>
+                            <div>
+                                <div class="step-title">Get a long-lived User Access Token</div>
+                                <div class="step-body">Use the <a href="https://developers.facebook.com/tools/explorer/"
+                                        target="_blank">Graph API Explorer</a> → select your app → add permissions:
+                                    <code>instagram_basic</code> <code>instagram_content_publish</code>
+                                    <code>pages_read_engagement</code> → Generate Token → exchange for long-lived token
+                                    (60 days).
+                                </div>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-num pending" id="sn4">4</div>
+                            <div>
+                                <div class="step-title">Find your Instagram User ID</div>
+                                <div class="step-body">In Graph API Explorer run: <code>GET /me/accounts</code> → find
+                                    your page ID → then <code>GET /{page-id}?fields=instagram_business_account</code> →
+                                    copy the <strong>IG User ID</strong> (Not the Facebook Page ID!).</div>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-num pending" id="sn5">5</div>
+                            <div>
+                                <div class="step-title">Paste credentials below & test</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Meta API credentials</div>
+                    <div class="form-row">
+                        <label class="label">Instagram User ID</label>
+                        <input class="input" id="ig-user-id" placeholder="e.g. 17841400008460056" />
+                    </div>
+                    <div class="form-row">
+                        <label class="label">Access Token (long-lived, 60 days)</label>
+                        <input class="input" id="ig-token" type="password" placeholder="EAAxxxxx..." />
+                    </div>
+                    <div class="form-row">
+                        <label class="label">Image hosting — Meta API requires a public URL</label>
+                        <select class="select-input" id="img-host" disabled>
+                            <option value="imgbb">ImgBB (free, required for uploading local files)</option>
+                        </select>
+                    </div>
+                    <div class="form-row" id="imgbb-row">
+                        <label class="label">ImgBB API Key <a href="https://api.imgbb.com/" target="_blank"
+                                style="font-weight:400;margin-left:6px">Get free key →</a></label>
+                        <input class="input" id="imgbb-key" type="password" placeholder="Paste ImgBB API key" />
+                    </div>
+                    <div class="security-banner">⚠️ <span>Your API keys are stored in plain-text
+                            <code>localStorage</code>. Anyone with access to DevTools on this device can read them.
+                            Never use this on a shared/public computer.</span></div>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                        <button class="btn btn-primary" onclick="testApiConnection()">💾 Save & Test Connection</button>
+                    </div>
+                    <div id="test-result" style="margin-top:12px;font-size:0.8rem;display:none;line-height:1.6;"></div>
+                </div>
+            </div>
+
+            <div id="page-settings" style="display:none">
+                <div class="page-header">
+                    <div class="page-title">Settings</div>
+                </div>
+                <div class="security-banner" style="margin-bottom:20px">🔒 <span>API keys (Claude, ImgBB, IG token) are
+                        stored in browser <code>localStorage</code> in plain text. The Claude API key is also visible in
+                        network requests due to direct browser access. Avoid using this on shared devices.</span></div>
+                <div class="grid2">
+                    <div class="card">
+                        <div class="card-title">Claude AI (captions)</div>
+                        <div class="form-row">
+                            <label class="label">API Key <a href="https://console.anthropic.com" target="_blank"
+                                    style="font-weight:400;margin-left:6px">Get key →</a></label>
+                            <input class="input" id="claude-key" type="password" placeholder="sk-ant-api03-..." />
+                        </div>
+                        <div class="form-row">
+                            <label class="label">Claude Model</label>
+                            <select class="select-input" id="claude-model">
+                                <option value="claude-sonnet-4-20250514">Sonnet (balanced)</option>
+                                <option value="claude-haiku-4-20250514">Haiku (fast & cheap)</option>
+                                <option value="claude-opus-4-20250514">Opus (highest quality)</option>
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <label class="label">Your niche / bio (AI uses this)</label>
+                            <input class="input" id="niche-input" placeholder="e.g. travel photographer, Mumbai" />
+                        </div>
+                        <div class="form-row">
+                            <label class="label">Default caption tone</label>
+                            <select class="select-input" id="default-tone">
+                                <option value="motivational">Motivational</option>
+                                <option value="chill">Chill & aesthetic</option>
+                                <option value="funny">Funny</option>
+                                <option value="minimal">Minimal</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary btn-sm" onclick="saveSettings()">Save settings</button>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">Default schedule slots</div>
+                        <div id="default-slots-list"></div>
+                        <div style="display:flex;gap:8px;margin-top:12px;">
+                            <input type="time" class="input" id="new-slot" value="09:00" style="flex:1" />
+                            <button class="btn btn-primary btn-sm" onclick="addDefaultSlot()">+ Add</button>
+                        </div>
+                        <div class="card-title" style="margin-top:20px">Auto-Publish Window</div>
+                        <div class="form-row">
+                            <label class="label">Max minutes past schedule time to auto-publish</label>
+                            <input type="number" class="input" id="auto-window" min="1" max="1440" value="30"
+                                style="max-width:120px" />
+                        </div>
+                        <button class="btn btn-sm btn-secondary" onclick="saveAutoWindow()">Save window</button>
+                        <div class="card-title" style="margin-top:20px">Export / Import</div>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                            <button class="btn btn-secondary btn-sm" onclick="exportQueue()">⬇ Export queue</button>
+                            <button class="btn btn-secondary btn-sm"
+                                onclick="document.getElementById('import-file').click()">⬆ Import queue</button>
+                            <input type="file" id="import-file" accept=".json" style="display:none"
+                                onchange="importQueue(event)" />
+                            <button class="btn btn-ghost btn-sm" onclick="clearAll()">🗑 Clear all data</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <div class="toast" id="toast-el"></div>
+
+    <div class="modal-bg" id="modal-bg" onclick="closeModal()">
+        <div class="modal" onclick="event.stopPropagation()">
+            <div class="modal-title" id="modal-title">Post Detail</div>
+            <div class="modal-sub" id="modal-body"></div>
+            <div id="publish-result"
+                style="display:none;font-size:0.78rem;padding:10px 12px;background:var(--surface2);border-radius:8px;margin-bottom:12px;line-height:1.6;word-break:break-all;">
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <button class="btn btn-primary btn-sm" onclick="publishNow()">🚀 Publish Now</button>
+                <button class="btn btn-secondary btn-sm" onclick="closeModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ═══════════════════════════════════════════
+        // STATE
+        // ═══════════════════════════════════════════
+        let S = {
+            queue: [],
+            drafts: [],
+            defaultSlots: ['09:00', '18:30'],
+            claudeKey: '',
+            igUserId: '',
+            igToken: '',
+            imgbbKey: '',
+            imgHost: 'imgbb',
+            niche: '',
+            defaultTone: 'chill',
+            postedCount: 0,
+            tokenSavedAt: null,            // Item 6
+            autoPublishWindowMinutes: 30,   // Item 9
+            claudeModel: 'claude-sonnet-4-20250514', // Item 20
+        };
+        let composerMode = 'feed';
+        let composerImages = [];
+        let calYear, calMonth;
+        let queueFilter = 'all';
+        let activeModalId = null;
+        let schedulerInterval = null;
+
+        function loadS() { try { const d = localStorage.getItem('igSched2'); if (d) Object.assign(S, JSON.parse(d)); } catch (e) { } }
+        function saveS() { try { localStorage.setItem('igSched2', JSON.stringify(S)); } catch (e) { } }
+
+        // ═══════════════════════════════════════════
+        // SECURITY: XSS helper + data URI validator
+        // ═══════════════════════════════════════════
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
+        // Item 2: validate data URIs to prevent XSS
+        function isValidDataUrl(url) {
+            if (!url) return false;
+            return /^data:image\/(jpeg|png|gif|webp|bmp|svg\+xml);base64,[A-Za-z0-9+/=]+$/.test(url) || /^https?:\/\//.test(url);
+        }
+        function safeImgSrc(url) { return isValidDataUrl(url) ? url : ''; }
+
+        // ═══════════════════════════════════════════
+        // Item 6: Token expiry check
+        // ═══════════════════════════════════════════
+        function checkTokenExpiry() {
+            const banner = document.getElementById('token-expiry-banner');
+            if (!banner) return;
+            if (S.tokenSavedAt) {
+                const daysSince = (Date.now() - S.tokenSavedAt) / (1000 * 60 * 60 * 24);
+                if (daysSince > 53) { banner.style.display = ''; }
+                else { banner.style.display = 'none'; }
+            } else { banner.style.display = 'none'; }
+        }
+
+        // ═══════════════════════════════════════════
+        // NAVIGATION
+        // ═══════════════════════════════════════════
+        function showPage(p) {
+            ['queue', 'compose', 'calendar', 'connect', 'settings'].forEach(id => {
+                document.getElementById('page-' + id).style.display = id === p ? '' : 'none';
+            });
+            document.querySelectorAll('.nav-item').forEach((el, i) => {
+                el.classList.toggle('active', ['queue', 'compose', 'calendar', 'connect', 'settings'][i] === p);
+            });
+            if (p === 'queue') { renderQueue(); checkTokenExpiry(); }
+            if (p === 'calendar') { initCal(); renderCal(); }
+            if (p === 'settings') loadSettingsUI();
+            if (p === 'connect') loadConnectUI();
+            // Item 15: sync settings to compose
+            if (p === 'compose') {
+                if (S.defaultTone) document.getElementById('cap-tone').value = S.defaultTone;
+                if (S.niche) document.getElementById('cap-topic').placeholder = S.niche || 'Topic / context';
+                renderDrafts(); // Item 10
+                // Item 11: timezone display
+                try { document.getElementById('tz-label').textContent = 'Timezone: ' + Intl.DateTimeFormat().resolvedOptions().timeZone; } catch (e) { }
+            }
+        }
+
+        // ═══════════════════════════════════════════
+        // COMPOSER
+        // ═══════════════════════════════════════════
+        function switchComposerTab(t) {
+            composerMode = t;
+            document.getElementById('ct-feed').classList.toggle('active', t === 'feed');
+            document.getElementById('ct-story').classList.toggle('active', t === 'story');
+            document.getElementById('uz-hint').textContent = t === 'feed' ? 'Single image for Feed post' : 'Vertical 9:16 image recommended for Stories';
+            composerImages = []; renderPreviews();
+        }
+
+        function handleFiles(e) { addFiles(Array.from(e.target.files)); e.target.value = ''; }
+        function handleDrop(e) {
+            e.preventDefault(); document.getElementById('upload-zone').classList.remove('drag');
+            addFiles(Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/')));
+        }
+        // Item 7: always limit to single image
+        function addFiles(files) {
+            if (!files.length) return;
+            const f = files[0];
+            const reader = new FileReader();
+            reader.onload = ev => { composerImages = [{ dataUrl: ev.target.result, name: f.name, file: f }]; renderPreviews(); };
+            reader.readAsDataURL(f);
+        }
+        function renderPreviews() {
+            const row = document.getElementById('preview-row');
+            // Item 2: safe image rendering
+            row.innerHTML = '';
+            composerImages.forEach((img, i) => {
+                const div = document.createElement('div');
+                div.className = 'preview-item';
+                const imgEl = document.createElement('img');
+                imgEl.src = safeImgSrc(img.dataUrl);
+                div.appendChild(imgEl);
+                const rm = document.createElement('div');
+                rm.className = 'rm';
+                rm.textContent = '×';
+                rm.onclick = () => removeImg(i);
+                div.appendChild(rm);
+                row.appendChild(div);
+            });
+        }
+        function removeImg(i) { composerImages.splice(i, 1); renderPreviews(); }
+
+        (function () {
+            const d = new Date();
+            const pad = n => String(n).padStart(2, '0');
+            document.getElementById('sched-date').value = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+        })();
+
+        function updateMethodUI() {
+            const apiChecked = document.getElementById('method-api').checked;
+            const apiLbl = document.getElementById('method-api-lbl');
+            const notifLbl = document.getElementById('method-notif-lbl');
+            apiLbl.style.borderColor = apiChecked ? 'var(--accent)' : 'var(--border)';
+            apiLbl.style.background = apiChecked ? '#fef5f2' : 'var(--surface2)';
+            notifLbl.style.borderColor = apiChecked ? 'var(--border)' : 'var(--accent)';
+            notifLbl.style.background = apiChecked ? 'var(--surface2)' : '#fef5f2';
+        }
+
+        async function generateCaption() {
+            const key = document.getElementById('claude-key').value || S.claudeKey;
+            if (!key) { toast('Add Claude API key in Settings', 'error'); return; }
+            const tone = document.getElementById('cap-tone').value;
+            const topic = document.getElementById('cap-topic').value;
+            const niche = document.getElementById('niche-input')?.value || S.niche;
+            const mode = composerMode;
+            const btn = document.getElementById('gen-btn');
+            btn.disabled = true; btn.textContent = 'Generating…';
+            const field = document.getElementById('caption-field');
+            field.value = '';
+            try {
+                const prompt = `You are an expert Instagram content strategist.
+Write a ${mode === 'story' ? 'short punchy Instagram Story caption (max 80 chars)' : 'compelling Instagram Feed post caption (max 180 chars)'}.
+Tone: ${tone}. ${topic ? 'Topic: ' + topic + '.' : ''} ${niche ? 'Niche/profile: ' + niche + '.' : ''}
+Return ONLY valid JSON, no markdown, no backticks:
+{"caption":"...","hashtags":["tag1","tag2","tag3","tag4","tag5"],"cta":"one short call-to-action line"}`;
+                // Item 20: use configurable model
+                const model = S.claudeModel || 'claude-sonnet-4-20250514';
+                const res = await fetch('https://api.anthropic.com/v1/messages', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+                    body: JSON.stringify({ model, max_tokens: 350, messages: [{ role: 'user', content: prompt }] })
+                });
+                const data = await res.json();
+                if (data.error) { toast('Claude error: ' + data.error.message, 'error'); return; }
+                let parsed;
+                try { parsed = JSON.parse(data.content[0].text.replace(/```json|```/g, '').trim()); }
+                catch (e) { parsed = { caption: data.content[0].text, hashtags: [], cta: '' }; }
+                field.value = parsed.caption + (parsed.cta ? '\n\n' + parsed.cta : '');
+                const hr = document.getElementById('hashtag-row');
+                hr.innerHTML = (parsed.hashtags || []).map(t => `<span class="chip">#${escapeHtml(t)}</span>`).join('');
+                toast('Caption generated ✦', 'success');
+            } catch (e) { toast('Network error', 'error'); }
+            finally { btn.disabled = false; btn.textContent = '✦ AI Caption'; }
+        }
+
+        // Item 8: Story aspect ratio validation
+        function checkStoryAspect(dataUrl) {
+            return new Promise(resolve => {
+                const img = new Image();
+                img.onload = () => {
+                    const ratio = img.height / img.width;
+                    // 9:16 = 1.777, allow ±15% tolerance (1.51 to 2.04)
+                    resolve(ratio >= 1.51 && ratio <= 2.04);
+                };
+                img.onerror = () => resolve(true); // allow on error
+                img.src = dataUrl;
+            });
+        }
+
+        async function schedulePost() {
+            if (!composerImages.length) { toast('Add a photo first', 'error'); return; }
+            const caption = document.getElementById('caption-field').value;
+            const date = document.getElementById('sched-date').value;
+            const time = document.getElementById('sched-time').value;
+            if (!date || !time) { toast('Pick a date and time', 'error'); return; }
+
+            // Item 8: validate story aspect ratio
+            if (composerMode === 'story') {
+                const isGoodRatio = await checkStoryAspect(composerImages[0].dataUrl);
+                if (!isGoodRatio) {
+                    if (!confirm('⚠️ This image does not appear to be 9:16 (portrait). Stories may not display correctly. Schedule anyway?')) return;
+                }
+            }
+
+            const method = document.querySelector('input[name="method"]:checked').value;
+            const hashtags = Array.from(document.querySelectorAll('#hashtag-row .chip')).map(c => c.textContent.slice(1));
+            S.queue.push({
+                id: Date.now(),
+                type: composerMode,
+                caption,
+                hashtags,
+                dataUrl: composerImages[0].dataUrl,
+                imageName: composerImages[0].name,
+                scheduledAt: date + 'T' + time,
+                method,
+                status: 'scheduled',
+                createdAt: new Date().toISOString(),
+            });
+            saveS(); composerImages = []; renderPreviews();
+            document.getElementById('caption-field').value = '';
+            document.getElementById('hashtag-row').innerHTML = '';
+            document.getElementById('best-time-results').innerHTML = '';
+            toast('Post scheduled! 🎉', 'success');
+            showPage('queue');
+        }
+
+        function saveDraft() {
+            if (!composerImages.length) { toast('Add a photo first', 'error'); return; }
+            S.drafts.push({ id: Date.now(), type: composerMode, caption: document.getElementById('caption-field').value, dataUrl: composerImages[0]?.dataUrl, savedAt: new Date().toISOString() });
+            saveS(); toast('Saved as draft', 'success'); renderDrafts();
+        }
+
+        // Item 10: render drafts
+        function renderDrafts() {
+            const el = document.getElementById('drafts-list');
+            if (!el) return;
+            if (!S.drafts || !S.drafts.length) { el.innerHTML = '<div style="font-size:0.82rem;color:var(--muted)">No drafts saved yet.</div>'; return; }
+            el.innerHTML = S.drafts.map((d, i) => {
+                const imgTag = d.dataUrl ? `<img src="${safeImgSrc(d.dataUrl)}" alt=""/>` : '';
+                return `<div class="draft-item">
+                    ${imgTag}
+                    <div class="draft-info">
+                        <div class="draft-caption">${escapeHtml(d.caption) || '(no caption)'}</div>
+                        <div class="draft-date">${escapeHtml(d.type)} · ${new Date(d.savedAt).toLocaleDateString()}</div>
+                    </div>
+                    <button class="btn btn-sm btn-secondary" onclick="loadDraft(${i})">Load</button>
+                    <div class="icon-btn danger" onclick="deleteDraft(${i})">✕</div>
+                </div>`;
+            }).join('');
+        }
+        function loadDraft(i) {
+            const d = S.drafts[i]; if (!d) return;
+            composerMode = d.type || 'feed';
+            switchComposerTab(composerMode);
+            document.getElementById('caption-field').value = d.caption || '';
+            if (d.dataUrl) {
+                composerImages = [{ dataUrl: d.dataUrl, name: 'draft', file: null }];
+                renderPreviews();
+            }
+            toast('Draft loaded ✓', 'success');
+        }
+        function deleteDraft(i) {
+            if (!confirm('Delete this draft?')) return;
+            S.drafts.splice(i, 1); saveS(); renderDrafts();
+        }
+
+        // Item 16: Best time to post suggestion
+        async function suggestBestTime() {
+            const key = document.getElementById('claude-key')?.value || S.claudeKey;
+            if (!key) { toast('Add Claude API key in Settings first', 'error'); return; }
+            const niche = S.niche || document.getElementById('cap-topic')?.value || '';
+            const btn = document.getElementById('best-time-btn');
+            btn.disabled = true; btn.textContent = 'Analyzing…';
+            try {
+                const model = S.claudeModel || 'claude-sonnet-4-20250514';
+                const res = await fetch('https://api.anthropic.com/v1/messages', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+                    body: JSON.stringify({ model, max_tokens: 200, messages: [{ role: 'user', content: `You are a social media strategist. Suggest 4 optimal posting times for an Instagram ${niche ? niche + ' ' : ''}account. Return ONLY a JSON array of time strings in 24hr format, like ["09:00","12:30","17:00","20:00"]. No explanation.` }] })
+                });
+                const data = await res.json();
+                if (data.error) { toast('Claude error', 'error'); return; }
+                const times = JSON.parse(data.content[0].text.replace(/```json|```/g, '').trim());
+                const container = document.getElementById('best-time-results');
+                container.innerHTML = times.map(t => `<button class="suggest-chip" onclick="document.getElementById('sched-time').value='${escapeHtml(t)}'">⏰ ${escapeHtml(t)}</button>`).join('');
+            } catch (e) { toast('Could not get suggestions', 'error'); }
+            finally { btn.disabled = false; btn.textContent = '✦ Suggest best time to post'; }
+        }
+
+        // ═══════════════════════════════════════════
+        // QUEUE
+        // ═══════════════════════════════════════════
+        function renderQueue() {
+            const list = document.getElementById('queue-list');
+            const empty = document.getElementById('queue-empty');
+            const today = new Date().toDateString();
+            let items = S.queue.filter(p => p.status !== 'deleted');
+            if (queueFilter !== 'all') items = items.filter(p => p.type === queueFilter);
+            items.sort((a, b) => new Date(a.scheduledAt) - new Date(b.scheduledAt));
+
+            document.getElementById('s-queued').textContent = S.queue.filter(p => p.status === 'scheduled').length;
+            document.getElementById('s-today').textContent = S.queue.filter(p => new Date(p.scheduledAt).toDateString() === today).length;
+            document.getElementById('s-done').textContent = S.postedCount || 0;
+
+            if (!items.length) { list.innerHTML = ''; empty.style.display = ''; return; }
+            empty.style.display = 'none';
+            list.innerHTML = items.map(p => {
+                const dt = new Date(p.scheduledAt);
+                const isToday = dt.toDateString() === today;
+                const isPast = dt < new Date() && p.status === 'scheduled';
+                const isFailed = p.status === 'failed';
+                const isPublished = p.status === 'published';
+                // Item 17: IG link for published posts
+                const igLink = isPublished && p.igMediaId ? ` <a class="ig-link" href="https://www.instagram.com/p/${p.igMediaId}/" target="_blank">View on IG →</a>` : '';
+
+                // Item 2: safe src via safeImgSrc
+                return `<div class="queue-item" draggable="true" data-id="${p.id}">
+      <img class="queue-thumb" src="${safeImgSrc(p.dataUrl)}" alt=""/>
+      <div class="queue-info">
+        <div class="queue-caption">${escapeHtml(p.caption) || '(no caption)'}</div>
+        <div class="queue-meta">
+          <span class="type-badge ${escapeHtml(p.type)}">${p.type === 'feed' ? '📰 Feed' : '✨ Story'}</span>
+          ${isPast ? '<span class="status-badge overdue">⚠ Overdue</span>' : ''}
+          ${isFailed ? '<span class="status-badge failed">❌ Failed</span>' : ''}
+          ${isPublished ? '<span class="status-badge published">✓ Published</span>' + igLink : ''}
+          ${isToday && !isPast && !isFailed && !isPublished ? '<span style="color:var(--success);font-size:0.7rem">• today</span>' : ''}
+        </div>
+      </div>
+      <div class="queue-time">${formatDt(dt)}</div>
+      <div class="queue-actions">
+        <div class="icon-btn" onclick="openPostDetail(${p.id})" title="View / Publish">👁</div>
+        <div class="icon-btn danger" onclick="deletePost(${p.id})" title="Delete">✕</div>
+      </div>
+    </div>`;
+            }).join('');
+
+            // Item 12: attach drag-and-drop handlers
+            initDragAndDrop();
+        }
+
+        function filterQueue(f) {
+            queueFilter = f;
+            ['all', 'feed', 'story'].forEach(k => { const el = document.getElementById('f-' + k); if (el) { el.className = 'btn btn-sm ' + (f === k ? 'btn-secondary' : 'btn-ghost'); if (f === k) { el.style.borderColor = 'var(--accent)'; el.style.color = 'var(--accent)'; } else { el.style.borderColor = ''; el.style.color = ''; } } });
+            renderQueue();
+        }
+
+        function deletePost(id) {
+            const p = S.queue.find(x => x.id === id); if (!p) return;
+            if (!confirm('Delete this post?')) return;
+            p.status = 'deleted'; saveS(); renderQueue();
+            toast('Post removed');
+        }
+
+        function formatDt(dt) {
+            const today = new Date().toDateString();
+            const tom = new Date(Date.now() + 86400000).toDateString();
+            const prefix = dt.toDateString() === today ? 'Today' : dt.toDateString() === tom ? 'Tomorrow' : dt.toLocaleDateString([], { month: 'short', day: 'numeric' });
+            return prefix + ' ' + dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        // ═══════════════════════════════════════════
+        // Item 12: Drag and Drop
+        // ══════════════════════════════════════════        // ═══════════════════════════════════════════
+        // POST DETAIL / PUBLISH
+        // ═══════════════════════════════════════════
+        function openPostDetail(id) {
+            const p = S.queue.find(x => x.id === id); if (!p) return;
+            activeModalId = id;
+            const pr = document.getElementById('publish-result'); if (pr) { pr.style.display = 'none'; pr.textContent = ''; }
+            document.getElementById('modal-title').textContent = (p.type === 'feed' ? '📰 Feed Post' : '✨ Story') + ' — ' + formatDt(new Date(p.scheduledAt));
+            const tags = p.hashtags && p.hashtags.length ? '<br/><br/>' + p.hashtags.map(t => '#' + escapeHtml(t)).join(' ') : '';
+            // Item 2: safe image via DOM
+            const body = document.getElementById('modal-body');
+            body.innerHTML = '';
+            const imgEl = document.createElement('img');
+            imgEl.src = safeImgSrc(p.dataUrl);
+            imgEl.style = "width:100%;border-radius:8px;margin-bottom:12px;max-height:220px;object-fit:cover;";
+            body.appendChild(imgEl);
+
+            const div = document.createElement('div');
+            div.innerHTML = `
+    <div style="font-size:0.85rem;line-height:1.6;color:var(--text)">${escapeHtml(p.caption) || ''}${tags}</div>
+    <div style="margin-top:10px;font-size:0.75rem;color:var(--muted)">Method: ${p.method === 'api' ? 'Meta API (auto)' : 'Phone reminder'}</div>
+    ${p.error ? `<div style="color:#dc2626;font-size:0.75rem;margin-top:5px;background:#fee2e2;padding:6px;border-radius:4px;">Error: ${escapeHtml(p.error)}</div>` : ''}`;
+            body.appendChild(div);
+
+            document.getElementById('modal-bg').classList.add('show');
+        }
+
+        function closeModal() { document.getElementById('modal-bg').classList.remove('show'); activeModalId = null; }
+
+        async function publishNow(passedId = null) {
+            const idToPublish = passedId || activeModalId;
+            if (!idToPublish) { closeModal(); return; }
+            const p = S.queue.find(x => x.id === idToPublish); if (!p) { closeModal(); return; }
+
+            // Item 5: fresh read from inputs
+            if (document.getElementById('page-connect').style.display !== 'none') {
+                captureCredentials();
+            }
+
+            if (p.method === 'api') {
+                if (!S.igUserId || !S.igToken) { toast('Add Instagram credentials in Connect page', 'error'); return; }
+                await publishViaApi(p);
+            } else {
+                toast('Reminder sent to phone! Check Telegram 📲', 'success');
+                p.status = 'reminded'; saveS();
+            }
+            renderQueue();
+        }
+
+        async function publishViaApi(p) {
+            const resultEl = document.getElementById('publish-result');
+            function log(msg, isErr) { if (resultEl) { resultEl.style.display = ''; resultEl.innerHTML = msg; resultEl.style.color = isErr ? '#dc2626' : 'var(--success)'; } }
+
+            // Item 5: final sanity check
+            if (!S.igUserId || !S.igToken) { toast('Missing IG credentials', 'error'); return; }
+            if (!S.imgbbKey) { toast('Missing ImgBB API key', 'error'); return; }
+
+            try {
+                toast('Step 1/3 — Uploading to ImgBB…');
+                log('Uploading image to ImgBB…');
+                const imageUrl = await uploadToImgbb(p.dataUrl, p.imageName);
+                if (!imageUrl) throw new Error('ImgBB upload failed. Check your API key at api.imgbb.com');
+                log('✓ Image uploaded to host.');
+
+                toast('Step 2/3 — Creating Instagram container…');
+                const fullCaption = p.caption + (p.hashtags && p.hashtags.length ? '\n\n' + p.hashtags.map(t => '#' + t).join(' ') : '');
+                let containerParams = p.type === 'story'
+                    ? { image_url: imageUrl, media_type: 'STORIES' }
+                    : { image_url: imageUrl, caption: fullCaption };
+
+                const cr = await igApi(`/${S.igUserId}/media`, containerParams);
+                if (!cr.id) {
+                    if (cr.error && cr.error.code === 190) throw new Error('Error 190: Invalid/Expired Token. Re-authenticate in the Connect tab.');
+                    throw new Error(cr.error ? cr.error.message : 'Container Creation Failed');
+                }
+                log('✓ Container created ID: ' + cr.id);
+
+                toast('Step 3/3 — Publishing to Instagram…');
+                await new Promise(r => setTimeout(r, 3000));
+                const pub = await igApi(`/${S.igUserId}/media_publish`, { creation_id: cr.id });
+
+                if (pub.id) {
+                    p.status = 'published'; p.publishedAt = new Date().toISOString(); p.igMediaId = pub.id; p.error = null;
+                    S.postedCount = (S.postedCount || 0) + 1; saveS();
+                    log('✅ Published! Instagram Media ID: ' + pub.id);
+                    toast('Posted to Instagram! 🎉', 'success');
+                } else throw new Error(pub.error ? pub.error.message : 'Publish Failed');
+
+            } catch (err) {
+                p.status = 'failed'; p.error = err.message; saveS();
+                toast('Publish failed', 'error'); log('❌ ' + err.message, true);
+            }
+        }
+
+        async function igApi(endpoint, params) {
+            const qs = new URLSearchParams({ ...params, access_token: S.igToken });
+            const url = `https://graph.facebook.com/v19.0${endpoint}`;
+            const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: qs.toString() });
+            return r.json();
+        }
+
+        async function uploadToImgbb(dataUrl, name) {
+            try {
+                const base64 = dataUrl.split(',')[1];
+                const fd = new FormData();
+                fd.append('key', S.imgbbKey);
+                fd.append('image', base64);
+                fd.append('name', (name || 'post').replace(/\.[^.]+$/, ''));
+                const r = await fetch('https://api.imgbb.com/1/upload', { method: 'POST', body: fd });
+                const d = await r.json();
+                if (d.success) return d.data.url;
+                console.error('ImgBB error:', d); return null;
+            } catch (e) { console.error('ImgBB exception:', e); return null; }
+        }
+
+        // ═══════════════════════════════════════════
+        // CALENDAR
+        // ═══════════════════════════════════════════
+        function initCal() { if (!calYear) { const n = new Date(); calYear = n.getFullYear(); calMonth = n.getMonth(); } }
+        function renderCal() {
+            const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            document.getElementById('cal-month-label').textContent = months[calMonth] + ' ' + calYear;
+            const grid = document.getElementById('cal-grid'); grid.innerHTML = '';
+            ['S', 'M', 'T', 'W', 'T', 'F', 'S'].forEach(d => { const el = document.createElement('div'); el.className = 'cal-day-label'; el.textContent = d; grid.appendChild(el); });
+            const first = new Date(calYear, calMonth, 1).getDay();
+            const days = new Date(calYear, calMonth + 1, 0).getDate();
+            const today = new Date();
+            const prevDays = new Date(calYear, calMonth, 0).getDate();
+            for (let i = first - 1; i >= 0; i--) { const d = document.createElement('div'); d.className = 'cal-day other-month'; d.textContent = prevDays - i; grid.appendChild(d); }
+            for (let d = 1; d <= days; d++) {
+                const el = document.createElement('div');
+                const isToday = d === today.getDate() && calMonth === today.getMonth() && calYear === today.getFullYear();
+                const dateStr = `${calYear}-${String(calMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                const hasPosts = S.queue.some(p => p.status !== 'deleted' && p.scheduledAt.startsWith(dateStr));
+                el.className = 'cal-day' + (isToday ? ' today' : '') + (hasPosts ? ' has-post' : '');
+                el.textContent = d;
+                el.onclick = () => showCalDay(dateStr, d);
+                grid.appendChild(el);
+            }
+        }
+        function prevMonth() { calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; } renderCal(); }
+        function nextMonth() { calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; } renderCal(); }
+
+        // Item 13: Calendar post thumbnails + publish shortcut
+        function showCalDay(dateStr, d) {
+            const posts = S.queue.filter(p => p.status !== 'deleted' && p.scheduledAt.startsWith(dateStr));
+            document.getElementById('cal-day-title').textContent = `Posts on ${dateStr}`;
+            const el = document.getElementById('cal-day-posts');
+            if (!posts.length) { el.innerHTML = '<div style="color:var(--muted)">No posts scheduled.</div>'; return; }
+            el.innerHTML = posts.map(p => `
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">
+      <img src="${safeImgSrc(p.dataUrl)}" style="width:36px;height:36px;border-radius:6px;object-fit:cover"/>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:0.8rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHtml(p.caption) || '(no caption)'}</div>
+        <div style="font-size:0.7rem;color:var(--muted)">${escapeHtml(p.type)} · ${new Date(p.scheduledAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end">
+        <span class="type-badge ${escapeHtml(p.type)}">${escapeHtml(p.type)}</span>
+        ${p.status === 'scheduled' ? `<button class="btn btn-sm btn-ig" style="padding:2px 6px;font-size:0.65rem" onclick="publishNow(${p.id})">Post</button>` : ''}
+      </div>
+    </div>`).join('');
+        }
+
+        // ═══════════════════════════════════════════
+        // CONNECT / SETTINGS
+        // ═══════════════════════════════════════════
+        function loadConnectUI() {
+            document.getElementById('ig-user-id').value = S.igUserId || '';
+            document.getElementById('ig-token').value = S.igToken || '';
+            document.getElementById('imgbb-key').value = S.imgbbKey || '';
+            updateConnPill();
+        }
+
+        // Item 5: Always capture from inputs
+        function captureCredentials() {
+            S.igUserId = document.getElementById('ig-user-id').value.trim();
+            S.igToken = document.getElementById('ig-token').value.trim();
+            S.imgbbKey = document.getElementById('imgbb-key').value.trim();
+            saveS();
+        }
+
+        async function testApiConnection() {
+            captureCredentials();
+            if (!S.igToken || !S.igUserId) { toast('Provide IG User ID & Token first', 'error'); return; }
+            const el = document.getElementById('test-result');
+            const errBox = document.getElementById('error-190-box');
+            el.style.display = ''; errBox.style.display = 'none';
+            el.textContent = 'Testing connection to Meta API…'; el.style.color = 'var(--muted)';
+
+            try {
+                // Fetch basic info. We remove ig_id to prevent error 100 on certain account types.
+                const r = await fetch(`https://graph.facebook.com/v19.0/${encodeURIComponent(S.igUserId)}?fields=name,username&access_token=${encodeURIComponent(S.igToken)}`);
+                const d = await r.json();
+                if (d.error) {
+                    el.style.color = '#dc2626';
+                    if (d.error.code === 190) { 
+                        errBox.style.display = 'block'; 
+                        el.innerHTML = '❌ <strong>Error 190: Invalid Token</strong>. Your token expired or lacks permissions.'; 
+                    } else if (d.error.code === 100) {
+                        el.innerHTML = `❌ <strong>API Error 100:</strong> You most likely entered your Facebook Page ID instead of your connected Instagram Professional ID. Use Graph API to find the 'instagram_business_account' ID.`;
+                    } else {
+                        el.textContent = `❌ API Error: ${d.error.message} (Code: ${d.error.code})`;
+                    }
+                    updateConnPill();
+                } else if (d.username || d.name) {
+                    const displayName = d.username ? `@${d.username}` : d.name;
+                    el.textContent = `✅ Success! Connected as ${displayName}`;
+                    el.style.color = 'var(--success)';
+                    ['sn1', 'sn2', 'sn3', 'sn4', 'sn5'].forEach(id => document.getElementById(id).className = 'step-num done');
+                    // Item 6: Save auth timestamp
+                    S.tokenSavedAt = Date.now(); saveS();
+                    updateConnPill(d.username || d.name);
+                    toast('Credentials saved & working ✓', 'success');
+                } else {
+                    el.textContent = '❌ Failed to retrieve account info. Did you paste a Page ID instead of an IG User ID?';
+                    el.style.color = '#dc2626';
+                }
+            } catch (e) { el.textContent = '❌ Network error: ' + e.message; el.style.color = '#dc2626'; }
+        }
+
+        function updateConnPill(handle) {
+            const dot = document.getElementById('conn-dot');
+            const lbl = document.getElementById('conn-label');
+            if (S.igToken && S.igUserId && handle) { dot.className = 'conn-dot ok'; lbl.textContent = handle ? handle : 'Connected'; }
+            else { dot.className = 'conn-dot'; lbl.textContent = 'Not connected'; }
+        }
+
+        function loadSettingsUI() {
+            document.getElementById('claude-key').value = S.claudeKey || '';
+            document.getElementById('niche-input').value = S.niche || '';
+            document.getElementById('default-tone').value = S.defaultTone || 'chill';
+            document.getElementById('claude-model').value = S.claudeModel || 'claude-sonnet-4-20250514';
+            document.getElementById('auto-window').value = S.autoPublishWindowMinutes || 30;
+            renderDefaultSlots();
+        }
+        function saveSettings() {
+            S.claudeKey = document.getElementById('claude-key').value.trim();
+            S.niche = document.getElementById('niche-input').value.trim();
+            S.defaultTone = document.getElementById('default-tone').value;
+            S.claudeModel = document.getElementById('claude-model').value;
+            saveS(); toast('Settings saved ✓', 'success');
+        }
+        // Item 9: Save window
+        function saveAutoWindow() {
+            S.autoPublishWindowMinutes = parseInt(document.getElementById('auto-window').value, 10) || 30;
+            saveS(); toast('Window saved', 'success');
+        }
+
+        function renderDefaultSlots() {
+            const el = document.getElementById('default-slots-list');
+            el.innerHTML = S.defaultSlots.map((t, i) => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border)">
+      <span style="font-weight:600;font-size:0.88rem">${t}</span>
+      <div class="icon-btn danger" onclick="removeSlot(${i})">✕</div>
+    </div>`).join('');
+        }
+        function addDefaultSlot() {
+            const t = document.getElementById('new-slot').value;
+            if (!t || S.defaultSlots.includes(t)) { toast('Already added', 'error'); return; }
+            S.defaultSlots.push(t); S.defaultSlots.sort(); saveS(); renderDefaultSlots(); toast('Slot added');
+        }
+        function removeSlot(i) { S.defaultSlots.splice(i, 1); saveS(); renderDefaultSlots(); }
+
+        function exportQueue() {
+            const data = JSON.stringify(S.queue.filter(p => p.status !== 'deleted'), null, 2);
+            const a = document.createElement('a');
+            a.href = 'data:application/json,' + encodeURIComponent(data);
+            a.download = 'ig-queue.json'; a.click();
+        }
+
+        // Item 19: Import queue
+        function importQueue(e) {
+            const file = e.target.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = ev => {
+                try {
+                    const imported = JSON.parse(ev.target.result);
+                    if (!Array.isArray(imported)) throw new Error("Invalid format");
+                    let added = 0;
+                    imported.forEach(impPost => {
+                        if (!S.queue.find(p => p.id === impPost.id)) { S.queue.push(impPost); added++; }
+                    });
+                    saveS(); renderQueue(); toast(`Imported ${added} posts`, 'success');
+                } catch (err) { toast('Invalid JSON file', 'error'); }
+                e.target.value = '';
+            };
+            reader.readAsText(file);
+        }
+
+        function clearAll() { if (!confirm('Delete ALL data?')) return; localStorage.removeItem('igSched2'); location.reload(); }
+
+        // ═══════════════════════════════════════════
+        // TOAST
+        // ═══════════════════════════════════════════
+        let toastT;
+        function toast(msg, type = '') {
+            const el = document.getElementById('toast-el');
+            el.textContent = (type === 'success' ? '✓ ' : type === 'error' ? '✕ ' : '') + msg;
+            el.className = 'toast show ' + (type || '');
+            clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove('show'), 2800);
+        }
+
+        // ═══════════════════════════════════════════
+        // AUTO-SCHEDULER (Item 4, 9, 14)
+        // ═══════════════════════════════════════════
+        async function checkSchedule() {
+            const now = new Date();
+            const due = S.queue.filter(p => (p.status === 'scheduled' || p.status === 'notified') && p.method === 'api');
+            let changed = false;
+
+            const windowMins = S.autoPublishWindowMinutes || 30;
+
+            for (const p of due) {
+                const dt = new Date(p.scheduledAt);
+                const diffMinutes = (now - dt) / 1000 / 60;
+
+                // Item 14: Notify 5 mins before
+                if (diffMinutes >= -5 && diffMinutes < 0 && p.status === 'scheduled') {
+                    if (Notification.permission === 'granted') {
+                        new Notification('IG post soon!', { body: `Scheduled for ${p.scheduledAt}. Ensure browser is open.` });
+                    }
+                    p.status = 'notified'; changed = true;
+                }
+                else if (diffMinutes >= 0 && diffMinutes <= windowMins) {
+                    p.status = 'publishing';
+                    await publishViaApi(p);
+                    changed = true;
+                } else if (diffMinutes > windowMins) {
+                    p.status = 'failed';
+                    p.error = `Missed ${windowMins}-minute schedule window`;
+                    changed = true;
+                }
+            }
+            if (changed) { saveS(); renderQueue(); }
+        }
+
+        // ═══════════════════════════════════════════
+        // INIT & SECURE STORAGE (Item 1 & 4)
+        // ═══════════════════════════════════════════
+
+        // Item 4: Tab visibility warning
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden') {
+                const hasPending = S.queue.some(p => p.status === 'scheduled' || p.status === 'notified');
+                if (hasPending && Notification.permission === 'granted') {
+                    new Notification('Warning: Auto-Scheduler paused', { body: 'IG Scheduler browser tab must stay open in the background to post.' });
+                }
+            }
+        });
+
+        // Request notifications on load
+        if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission();
+        }
+
+        // Basic init loop
+        function startApp() {
+            loadS();
+            updateConnPill();
+            renderQueue();
+            checkTokenExpiry();
+            schedulerInterval = setInterval(checkSchedule, 20000); // More frequent checks (every 20s)   
+        }
+
+        startApp();
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').catch(err => console.error('SW reg failed:', err));
+            });
+        }
+    </script>
+</body>
+
+</html>

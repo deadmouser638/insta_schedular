@@ -1,0 +1,3 @@
+# Docker Compose removed — project uses local SQLite + local Redis.
+# Database: SQLite at apps/api/prisma/dev.db (no setup needed)
+# Redis: Install locally via WSL2 or use Memurai for Windows

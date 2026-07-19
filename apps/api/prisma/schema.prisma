@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String      @id @default(uuid())
+  email      String      @unique
+  name       String
+  password   String      // bcrypt hashed
+  niche      String?
+  defaultTone String?    @default("chill")
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  igAccounts IGAccount[]
+  posts      Post[]
+  sessions   Session[]
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  userId       String
+  refreshToken String   @unique
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model IGAccount {
+  id             String    @id @default(uuid())
+  userId         String
+  igUserId       String    @unique
+  igUsername     String
+  accessToken    String    // AES-256-GCM encrypted
+  tokenExpiresAt DateTime
+  isActive       Boolean   @default(true)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  posts Post[]
+}
+
+model Post {
+  id           String   @id @default(uuid())
+  userId       String
+  igAccountId  String
+  type         String   // "feed" | "story" | "carousel"
+  status       String   @default("scheduled") // "draft" | "scheduled" | "publishing" | "published" | "failed" | "deleted"
+  caption      String?
+  hashtags     String   @default("[]") // JSON array stored as string
+  imageUrls    String   @default("[]") // JSON array stored as string (S3 public URLs)
+  scheduledAt  DateTime
+  publishedAt  DateTime?
+  igMediaId    String?    // IG media ID after publish
+  errorMessage String?
+  method       String     @default("api") // 'api' | 'reminder'
+  bullJobId    String?    // BullMQ job reference
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  igAccount IGAccount @relation(fields: [igAccountId], references: [id])
+}
+
+// NOTE: PostType and PostStatus enums removed — SQLite does not support enums.
+// Use string values instead: type = "feed" | "story" | "carousel"
+// status = "draft" | "scheduled" | "publishing" | "published" | "failed" | "deleted"

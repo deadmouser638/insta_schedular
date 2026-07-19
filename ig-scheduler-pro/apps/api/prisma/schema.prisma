@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String         @id @default(cuid())
+  email         String         @unique
+  name          String
+  passwordHash  String
+  niche         String?
+  defaultTone   String         @default("chill")
+  defaultSlots  String         @default("[\"09:00\", \"18:30\"]") // JSON array stored as string
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  accounts      IgAccount[]
+  posts         Post[]
+  sessions      Session[]
+}
+
+model IgAccount {
+  id                String    @id @default(cuid())
+  userId            String
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  igUserId          String
+  igUsername        String?
+  encryptedToken    String
+  tokenExpiresAt    DateTime?
+  imgHost           String    @default("imgbb")
+  encryptedImgbbKey String?
+  connectedAt       DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  @@unique([userId, igUserId])
+}
+
+model Post {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type        String
+  caption     String?
+  hashtags    String    @default("[]") // JSON array stored as string
+  mediaUrls   String    @default("[]") // JSON array stored as string
+  scheduledAt DateTime
+  method      String    @default("api")
+  status      String    @default("scheduled")
+  igMediaId   String?
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  refreshToken String   @unique
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+}

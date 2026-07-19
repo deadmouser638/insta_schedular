@@ -1,0 +1,16 @@
+{
+  "name": "IG Scheduler Pro",
+  "short_name": "IG Scheduler",
+  "description": "An intelligent Instagram auto-scheduler and caption generator built directly in your browser. No backend required! Features AI-driven caption generation, optimal posting time suggestions, and full local data privacy.",
+  "start_url": "/index2.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ff5a5f",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/1384/1384031.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

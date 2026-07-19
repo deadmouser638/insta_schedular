@@ -1,0 +1,6 @@
+# Docker Compose removed — project uses local SQLite + local Redis.
+# To run Redis locally on Windows, use:
+#   - Windows: Install Redis via WSL2 or use Memurai (Windows-native Redis alternative)
+#   - Or remove Redis dependency entirely if not using BullMQ queues
+#
+# Database: SQLite at apps/api/prisma/dev.db (no setup needed)

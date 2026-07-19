@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #f7f5f2;
+  --surface: #fff;
+  --surface2: #f0ede8;
+  --border: #e2ddd8;
+  --border2: #cdc8c0;
+  --text: #1a1814;
+  --muted: #8a8580;
+  --accent: #e8522a;
+  --accent3: #2a7ae8;
+  --success: #22a06b;
+  --ig-grad: linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+}
