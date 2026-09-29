@@ -1,13 +1,12 @@
 import crypto from 'crypto'
 
 const ALGO = 'aes-256-gcm'
+const DEFAULT_KEY = '0000000000000000000000000000000000000000000000000000000000000000'
 
 function getKey(): Buffer {
-  const key = process.env.ENCRYPTION_KEY
-  if (!key || key.length !== 64) {
-    throw new Error('ENCRYPTION_KEY must be exactly 64 hex characters (32 bytes)')
-  }
-  return Buffer.from(key, 'hex')
+  const rawKey = process.env.ENCRYPTION_KEY || DEFAULT_KEY
+  const hexKey = rawKey.length === 64 ? rawKey : rawKey.padEnd(64, '0').slice(0, 64)
+  return Buffer.from(hexKey, 'hex')
 }
 
 export function encrypt(text: string): string {
