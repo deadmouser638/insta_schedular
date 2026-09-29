@@ -1,3 +1,16 @@
+// Register ts-node for on-the-fly TypeScript module resolution in Node.js
+try {
+  require('ts-node').register({
+    transpileOnly: true,
+    compilerOptions: {
+      module: 'commonjs',
+      esModuleInterop: true,
+    }
+  })
+} catch (e) {
+  console.warn('[ts-node] Registration note:', e?.message || e)
+}
+
 const express = require('express')
 const cors = require('cors')
 const cookieParser = require('cookie-parser')
@@ -18,7 +31,7 @@ app.use(express.urlencoded({ extended: true }))
 
 // Root Route - Pure HTTP metadata response
 app.get('/', (_req, res) => {
-  res.json({
+  const metadata = {
     name: 'IG Scheduler Pro API',
     version: '1.0.0',
     status: 'online',
@@ -35,7 +48,9 @@ app.get('/', (_req, res) => {
       settings: '/api/settings',
       instagram: '/api/instagram'
     }
-  })
+  }
+
+  res.json(metadata)
 })
 
 app.get('/api/health', (_req, res) => {
@@ -55,32 +70,42 @@ app.get('/api/seo', (_req, res) => {
   })
 })
 
+function loadModule(relativePath) {
+  try {
+    return require(`../apps/api/dist/${relativePath}`)
+  } catch (distErr) {
+    try {
+      return require(`../apps/api/src/${relativePath}`)
+    } catch (srcErr) {
+      console.error(`[LoadModule Error] ${relativePath}:`, srcErr?.message || srcErr)
+      return {}
+    }
+  }
+}
+
 // Safely require routes
 try {
-  const { authRouter } = require('../apps/api/src/routes/auth')
-  const { postsRouter } = require('../apps/api/src/routes/posts')
-  const { publishRouter } = require('../apps/api/src/routes/publish')
-  const { accountsRouter } = require('../apps/api/src/routes/accounts')
-  const { captionsRouter } = require('../apps/api/src/routes/captions')
-  const { uploadsRouter } = require('../apps/api/src/routes/uploads')
-  const { settingsRouter } = require('../apps/api/src/routes/settings')
-  const { instagramRouter } = require('../apps/api/src/routes/instagram')
-  const { errorHandler } = require('../apps/api/src/middleware/errorHandler')
+  const { authRouter } = loadModule('routes/auth')
+  const { postsRouter } = loadModule('routes/posts')
+  const { publishRouter } = loadModule('routes/publish')
+  const { accountsRouter } = loadModule('routes/accounts')
+  const { captionsRouter } = loadModule('routes/captions')
+  const { uploadsRouter } = loadModule('routes/uploads')
+  const { settingsRouter } = loadModule('routes/settings')
+  const { instagramRouter } = loadModule('routes/instagram')
+  const { errorHandler } = loadModule('middleware/errorHandler')
 
-  app.use('/api/auth', authRouter)
-  app.use('/api/instagram', instagramRouter)
-  app.use('/api/accounts', accountsRouter)
-  app.use('/api/posts', publishRouter)
-  app.use('/api/posts', postsRouter)
-  app.use('/api/captions', captionsRouter)
-  app.use('/api/uploads', uploadsRouter)
-  app.use('/api/settings', settingsRouter)
-  app.use(errorHandler)
+  if (authRouter) app.use('/api/auth', authRouter)
+  if (instagramRouter) app.use('/api/instagram', instagramRouter)
+  if (accountsRouter) app.use('/api/accounts', accountsRouter)
+  if (publishRouter) app.use('/api/posts', publishRouter)
+  if (postsRouter) app.use('/api/posts', postsRouter)
+  if (captionsRouter) app.use('/api/captions', captionsRouter)
+  if (uploadsRouter) app.use('/api/uploads', uploadsRouter)
+  if (settingsRouter) app.use('/api/settings', settingsRouter)
+  if (errorHandler) app.use(errorHandler)
 } catch (err) {
   console.error('[Vercel Boot Error]:', err)
-  app.use('/api/*', (_req, res) => {
-    res.status(500).json({ error: 'Serverless Function Boot Error', details: err?.message || String(err) })
-  })
 }
 
 app.use((_req, res) => {
