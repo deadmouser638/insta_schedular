@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../api/client'
 import { motion, AnimatePresence } from 'framer-motion'
+import SEO from '../components/SEO'
 
 interface IGAccount {
   id: string
@@ -262,6 +263,11 @@ export default function Compose() {
 
   return (
     <div className="min-h-screen p-6 md:p-10 relative z-10 perspective-[1000px] overflow-hidden">
+      <SEO
+        title="Compose & Schedule Post - IG Scheduler Pro"
+        description="Create, generate AI captions, and schedule new Instagram posts, reels, stories, or carousels."
+        canonicalUrl="https://insta-schedular-api.vercel.app/compose"
+      />
       {/* ── Notification ─────────────────────────────────────────── */}
       <AnimatePresence>
         {notification && (

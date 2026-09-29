@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import SEO from '../components/SEO'
 
 export default function Calendar() {
   const containerVariants = {
@@ -21,6 +22,11 @@ export default function Calendar() {
 
   return (
     <div className="min-h-screen p-6 md:p-10 relative z-10 perspective-[1000px] overflow-hidden">
+      <SEO
+        title="Content Calendar - IG Scheduler Pro"
+        description="Visual calendar overview of all scheduled and published Instagram content."
+        canonicalUrl="https://insta-schedular-api.vercel.app/calendar"
+      />
       {/* ── Header ────────────────────────────────────────────────── */}
       <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="mb-10">
         <h1 className="text-5xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-300 mb-2 drop-shadow-md">

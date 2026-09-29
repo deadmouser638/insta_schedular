@@ -8,6 +8,8 @@ const Compose = lazy(() => import('./pages/Compose'))
 const Calendar = lazy(() => import('./pages/Calendar'))
 const Connect = lazy(() => import('./pages/Connect'))
 const Settings = lazy(() => import('./pages/Settings'))
+const Login = lazy(() => import('./pages/Login'))
+const Register = lazy(() => import('./pages/Register'))
 
 function App() {
   return (
@@ -18,6 +20,11 @@ function App() {
         </div>
       }>
         <Routes>
+          {/* Public Authentication Routes */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+
+          {/* Protected Application Routes */}
           <Route element={<ProtectedRoute />}>
             <Route element={<Shell />}>
               <Route path="/" element={<Queue />} />
@@ -25,7 +32,7 @@ function App() {
               <Route path="/calendar" element={<Calendar />} />
               <Route path="/connect" element={<Connect />} />
               <Route path="/settings" element={<Settings />} />
-              {/* Fallback to dashboard */}
+              {/* Fallback to root dashboard */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Route>
           </Route>

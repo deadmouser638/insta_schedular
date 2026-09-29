@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../api/client'
 import { motion, AnimatePresence } from 'framer-motion'
+import SEO from '../components/SEO'
 
 interface IGAccountRef {
   id: string
@@ -284,6 +285,11 @@ export default function Queue() {
 
   return (
     <div className="min-h-screen p-6 md:p-10 relative z-10 perspective-[1000px]">
+      <SEO
+        title="Post Queue - IG Scheduler Pro"
+        description="Manage and monitor your upcoming scheduled Instagram posts, reels, stories, and carousel queues."
+        canonicalUrl="https://insta-schedular-api.vercel.app/"
+      />
       {/* ── Notification ─────────────────────────────────────────── */}
       <AnimatePresence>
         {notification && (

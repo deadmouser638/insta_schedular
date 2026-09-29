@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { api } from '../api/client'
 import { motion, AnimatePresence } from 'framer-motion'
+import SEO from '../components/SEO'
 
 interface IGAccount {
   id: string
@@ -175,6 +176,11 @@ export default function Connect() {
 
   return (
     <div className="min-h-screen p-6 md:p-10 relative z-10 perspective-[1000px] overflow-hidden">
+      <SEO
+        title="Connect Instagram Account - IG Scheduler Pro"
+        description="Connect and manage your Instagram Business and Creator accounts for automated posting."
+        canonicalUrl="https://insta-schedular-api.vercel.app/connect"
+      />
       {/* ── Notification Banner ───────────────────────────────────── */}
       <AnimatePresence>
         {notification && (

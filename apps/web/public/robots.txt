@@ -1,0 +1,15 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+Allow: /login
+Allow: /register
+Allow: /compose
+Allow: /calendar
+Allow: /connect
+Allow: /settings
+
+# Host
+Host: https://insta-schedular-api.vercel.app
+
+# Sitemaps
+Sitemap: https://insta-schedular-api.vercel.app/sitemap.xml

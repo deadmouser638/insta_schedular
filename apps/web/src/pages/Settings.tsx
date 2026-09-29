@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
-import { useAuthStore } from '../store/authStore'
+import { useAuthStore } from '../stores/authStore'
+import SEO from '../components/SEO'
 
 export default function Settings() {
   const { user, logout } = useAuthStore()
@@ -24,6 +25,11 @@ export default function Settings() {
 
   return (
     <div className="min-h-screen p-6 md:p-10 relative z-10 perspective-[1000px] overflow-hidden">
+      <SEO
+        title="Settings & API Configuration - IG Scheduler Pro"
+        description="Configure application settings, API keys, and account preferences."
+        canonicalUrl="https://insta-schedular-api.vercel.app/settings"
+      />
       {/* ── Header ────────────────────────────────────────────────── */}
       <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="mb-10">
         <h1 className="text-5xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-300 mb-2 drop-shadow-md">
