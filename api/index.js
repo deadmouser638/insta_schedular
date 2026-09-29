@@ -16,14 +16,22 @@ let connectedAccounts = [
 
 let posts = []
 
-module.exports = (req, res) => {
-  // CORS Headers
+function sendJson(res, statusCode, data) {
+  res.statusCode = statusCode
+  res.setHeader('Content-Type', 'application/json; charset=utf-8')
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS')
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+  res.end(JSON.stringify(data))
+}
 
+module.exports = (req, res) => {
   if (req.method === 'OPTIONS') {
-    return res.status(200).end()
+    res.statusCode = 200
+    res.setHeader('Access-Control-Allow-Origin', '*')
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS')
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+    return res.end()
   }
 
   const url = req.url || '/'
@@ -35,9 +43,9 @@ module.exports = (req, res) => {
     if (appId) {
       const scopes = 'public_profile,instagram_basic,instagram_content_publish,instagram_manage_insights,pages_show_list,pages_read_engagement,business_management'
       const authUrl = `https://www.facebook.com/v19.0/dialog/oauth?client_id=${encodeURIComponent(appId)}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scopes)}&response_type=code&state=dev-user-id`
-      return res.status(200).json({ authUrl })
+      return sendJson(res, 200, { authUrl })
     }
-    return res.status(200).json({ authUrl: 'https://insta-schedular-api.vercel.app/connect?success=true&count=1' })
+    return sendJson(res, 200, { authUrl: 'https://insta-schedular-api.vercel.app/connect?success=true&count=1' })
   }
 
   // Instagram Accounts listing & deletion
@@ -46,18 +54,18 @@ module.exports = (req, res) => {
       const parts = url.split('?')[0].split('/')
       const id = parts[parts.length - 1]
       connectedAccounts = connectedAccounts.filter(a => a.id !== id)
-      return res.status(200).json({ message: 'Account disconnected successfully 👋' })
+      return sendJson(res, 200, { message: 'Account disconnected successfully 👋' })
     }
-    return res.status(200).json(connectedAccounts)
+    return sendJson(res, 200, connectedAccounts)
   }
 
   // Manual Instagram Connection
   if (url.includes('/instagram/connect-manual')) {
-    const { pageAccessToken, igBusinessAccountId } = req.body || {}
+    let body = req.body || {}
     const newAccount = {
       id: 'acc-' + Date.now(),
-      igUserId: igBusinessAccountId || '17841400000000099',
-      igUsername: 'ig_account_' + (igBusinessAccountId ? String(igBusinessAccountId).slice(-4) : 'meta'),
+      igUserId: body.igBusinessAccountId || '17841400000000099',
+      igUsername: 'ig_account_' + (body.igBusinessAccountId ? String(body.igBusinessAccountId).slice(-4) : 'meta'),
       tokenExpiresAt: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString(),
       isActive: true,
       createdAt: new Date().toISOString(),
@@ -68,17 +76,17 @@ module.exports = (req, res) => {
       status: 'connected'
     }
     connectedAccounts.unshift(newAccount)
-    return res.status(200).json({ message: 'Instagram Business Account connected successfully! 🎉', account: newAccount })
+    return sendJson(res, 200, { message: 'Instagram Business Account connected successfully! 🎉', account: newAccount })
   }
 
   // Health check
   if (url.includes('/health')) {
-    return res.status(200).json({ status: 'ok', timestamp: new Date().toISOString(), environment: 'production' })
+    return sendJson(res, 200, { status: 'ok', timestamp: new Date().toISOString(), environment: 'production' })
   }
 
   // SEO metadata
   if (url.includes('/seo')) {
-    return res.status(200).json({
+    return sendJson(res, 200, {
       openGraph: {
         title: 'IG Scheduler Pro API',
         type: 'website',
@@ -90,7 +98,7 @@ module.exports = (req, res) => {
 
   // Auth endpoints
   if (url.includes('/auth/login') || url.includes('/auth/register')) {
-    return res.status(200).json({
+    return sendJson(res, 200, {
       accessToken: 'dev-jwt-token-sample',
       user: { id: 'dev-user-id', email: req.body?.email || 'deadmouser638@example.com', name: 'deadmouser638' }
     })
@@ -101,21 +109,21 @@ module.exports = (req, res) => {
     if (req.method === 'POST') {
       const newPost = { id: 'post-' + Date.now(), status: 'scheduled', createdAt: new Date().toISOString(), ...(req.body || {}) }
       posts.unshift(newPost)
-      return res.status(201).json(newPost)
+      return sendJson(res, 201, newPost)
     }
-    return res.status(200).json(posts)
+    return sendJson(res, 200, posts)
   }
 
   // Captions AI generator
   if (url.includes('/captions/generate')) {
-    return res.status(200).json({
+    return sendJson(res, 200, {
       caption: '🚀 Elevating social media automation with IG Scheduler Pro! ✨',
       hashtags: ['#InstagramScheduler', '#SocialMedia', '#Automation', '#IGScheduler']
     })
   }
 
   // Default API metadata catalog
-  return res.status(200).json({
+  return sendJson(res, 200, {
     name: 'IG Scheduler Pro API',
     version: '1.0.0',
     status: 'online',
