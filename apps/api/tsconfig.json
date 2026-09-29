@@ -6,6 +6,7 @@
     "outDir": "./dist",
     "esModuleInterop": true,
     "strict": true,
+    "lib": ["es2020", "esnext"],
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true
