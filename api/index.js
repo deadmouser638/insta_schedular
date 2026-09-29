@@ -133,7 +133,7 @@ app.post('/api/posts', (req, res) => {
 })
 
 // Captions endpoint
-app.post('/api/captions/generate', (req, res) => {
+app.post('/api/captions/generate', (_req, res) => {
   res.json({
     caption: '🚀 Elevating social media automation with IG Scheduler Pro! ✨',
     hashtags: ['#InstagramScheduler', '#SocialMedia', '#Automation']
@@ -145,4 +145,4 @@ app.use((_req, res) => {
   res.status(404).json({ error: 'Route not found' })
 })
 
-module.exports = app
+module.exports = (req, res) => app(req, res)
