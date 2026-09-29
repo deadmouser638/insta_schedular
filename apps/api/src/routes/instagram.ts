@@ -421,7 +421,15 @@ instagramRouter.get('/accounts', async (req, res, next) => {
       orderBy: { createdAt: 'desc' },
     })
 
-    const enriched = accounts.map(acc => {
+    const enriched = accounts.map((acc: {
+      id: string
+      igUserId: string
+      igUsername: string
+      tokenExpiresAt: Date
+      isActive: boolean
+      createdAt: Date
+      updatedAt: Date
+    }) => {
       const now = new Date()
       const daysUntilExpiry = Math.floor(
         (acc.tokenExpiresAt.getTime() - now.getTime()) / 86400000
