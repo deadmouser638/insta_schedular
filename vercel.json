@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "outputDirectory": "apps/web/dist",
+  "outputDirectory": "dist",
   "builds": [
     {
       "src": "api/index.js",
@@ -10,7 +10,7 @@
       "src": "apps/web/package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "dist"
+        "distDir": "../../dist"
       }
     }
   ],
