@@ -16,27 +16,29 @@ app.use(cookieParser())
 app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ extended: true }))
 
-// Root Route - Full SEO HTML & JSON metadata
-app.get('/', (req, res) => {
-  const isHtml = req.headers.accept?.includes('text/html')
-  const metadata = {
-    name: 'IG Scheduler Pro API',
-    version: '1.0.0',
-    status: 'online',
-    description: 'Automated Instagram content scheduling backend API platform.',
-    website: 'https://insta-schedular-api.vercel.app',
-    endpoints: {
-      health: '/api/health',
-      seo: '/api/seo',
-      auth: '/api/auth',
-      accounts: '/api/accounts',
-      posts: '/api/posts',
-      captions: '/api/captions',
-      uploads: '/api/uploads',
-      settings: '/api/settings',
-      instagram: '/api/instagram'
-    }
+const getMetadata = () => ({
+  name: 'IG Scheduler Pro API',
+  version: '1.0.0',
+  status: 'online',
+  description: 'Automated Instagram content scheduling backend API platform.',
+  website: 'https://insta-schedular-api.vercel.app',
+  endpoints: {
+    health: '/api/health',
+    seo: '/api/seo',
+    auth: '/api/auth',
+    accounts: '/api/accounts',
+    posts: '/api/posts',
+    captions: '/api/captions',
+    uploads: '/api/uploads',
+    settings: '/api/settings',
+    instagram: '/api/instagram'
   }
+})
+
+// Root & /api Handlers
+app.get(['/', '/api'], (req, res) => {
+  const isHtml = req.headers.accept?.includes('text/html')
+  const metadata = getMetadata()
 
   if (isHtml) {
     res.setHeader('Content-Type', 'text/html; charset=utf-8')
@@ -78,11 +80,11 @@ app.get('/', (req, res) => {
   res.json(metadata)
 })
 
-app.get('/api/health', (_req, res) => {
+app.get(['/health', '/api/health'], (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString(), environment: 'production' })
 })
 
-app.get('/api/seo', (_req, res) => {
+app.get(['/seo', '/api/seo'], (_req, res) => {
   res.json({
     openGraph: {
       title: 'IG Scheduler Pro API',
@@ -101,39 +103,35 @@ app.get('/api/seo', (_req, res) => {
 })
 
 // Auth endpoints
-app.post('/api/auth/login', (req, res) => {
+app.post(['/auth/login', '/api/auth/login'], (req, res) => {
   res.json({
     accessToken: 'dev-jwt-token-sample',
     user: { id: 'dev-user-id', email: req.body?.email || 'dev@example.com', name: 'Dev User' }
   })
 })
 
-app.post('/api/auth/register', (req, res) => {
+app.post(['/auth/register', '/api/auth/register'], (req, res) => {
   res.status(201).json({
     user: { id: 'dev-user-id', email: req.body?.email || 'dev@example.com', name: req.body?.name || 'Dev User' }
   })
 })
 
 // Accounts endpoints
-app.get('/api/accounts', (_req, res) => {
-  res.json([])
-})
-
-app.get('/api/instagram/accounts', (_req, res) => {
+app.get(['/accounts', '/api/accounts', '/instagram/accounts', '/api/instagram/accounts'], (_req, res) => {
   res.json([])
 })
 
 // Posts endpoints
-app.get('/api/posts', (_req, res) => {
+app.get(['/posts', '/api/posts'], (_req, res) => {
   res.json([])
 })
 
-app.post('/api/posts', (req, res) => {
+app.post(['/posts', '/api/posts'], (req, res) => {
   res.status(201).json({ id: 'post-' + Date.now(), status: 'scheduled', ...req.body })
 })
 
 // Captions endpoint
-app.post('/api/captions/generate', (_req, res) => {
+app.post(['/captions/generate', '/api/captions/generate'], (_req, res) => {
   res.json({
     caption: '🚀 Elevating social media automation with IG Scheduler Pro! ✨',
     hashtags: ['#InstagramScheduler', '#SocialMedia', '#Automation']
@@ -145,4 +143,4 @@ app.use((_req, res) => {
   res.status(404).json({ error: 'Route not found' })
 })
 
-module.exports = (req, res) => app(req, res)
+module.exports = app
