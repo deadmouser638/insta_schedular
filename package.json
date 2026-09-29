@@ -21,13 +21,5 @@
     "prisma": "^5.22.0",
     "ts-node": "^10.9.2",
     "turbo": "^2.8.21"
-  },
-  "dependencies": {
-    "@prisma/client": "^5.22.0",
-    "cookie-parser": "^1.4.7",
-    "cors": "^2.8.5",
-    "express": "^4.21.2",
-    "helmet": "^8.0.0",
-    "ts-node": "^10.9.2"
   }
 }
