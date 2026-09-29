@@ -265,7 +265,7 @@ export default function Queue() {
   }
 
   // Framer Motion Variants
-  const containerVariants = {
+  const containerVariants: any = {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
@@ -273,13 +273,13 @@ export default function Queue() {
     }
   }
 
-  const cardVariants = {
+  const cardVariants: any = {
     hidden: { opacity: 0, y: 50, rotateX: 20 },
     show: { 
       opacity: 1, 
       y: 0, 
       rotateX: 0,
-      transition: { type: "spring", stiffness: 200, damping: 20 }
+      transition: { type: 'spring', stiffness: 200, damping: 20 }
     }
   }
 

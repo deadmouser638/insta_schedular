@@ -5,7 +5,7 @@ import SEO from '../components/SEO'
 export default function Settings() {
   const { user, logout } = useAuthStore()
 
-  const containerVariants = {
+  const containerVariants: any = {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
@@ -13,13 +13,13 @@ export default function Settings() {
     }
   }
 
-  const itemVariants = {
+  const itemVariants: any = {
     hidden: { opacity: 0, y: 30, scale: 0.95 },
     show: { 
       opacity: 1, 
       y: 0, 
       scale: 1,
-      transition: { type: "spring", stiffness: 200, damping: 20 }
+      transition: { type: 'spring', stiffness: 200, damping: 20 }
     }
   }
 

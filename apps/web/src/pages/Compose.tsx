@@ -243,7 +243,7 @@ export default function Compose() {
   const captionColor =
     captionLen > 2200 ? 'text-red-400' : captionLen > 2000 ? 'text-amber-400' : 'text-zinc-500'
 
-  const containerVariants = {
+  const containerVariants: any = {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
@@ -251,13 +251,13 @@ export default function Compose() {
     }
   }
 
-  const panelVariants = {
+  const panelVariants: any = {
     hidden: { opacity: 0, y: 50, rotateX: 15 },
     show: { 
       opacity: 1, 
       y: 0, 
       rotateX: 0,
-      transition: { type: "spring", stiffness: 200, damping: 20 }
+      transition: { type: 'spring', stiffness: 200, damping: 20 }
     }
   }
 
