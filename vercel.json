@@ -7,6 +7,14 @@
     {
       "source": "/api",
       "destination": "/api/index.js"
+    },
+    {
+      "source": "/assets/(.*)",
+      "destination": "/apps/web/dist/assets/$1"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/apps/web/dist/index.html"
     }
   ]
 }
