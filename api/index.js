@@ -16,14 +16,6 @@ app.use(cookieParser())
 app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ extended: true }))
 
-// Normalize URL path for Vercel Serverless Function rewrites
-app.use((req, _res, next) => {
-  if (req.originalUrl) {
-    req.url = req.originalUrl
-  }
-  next()
-})
-
 // In-memory data store for serverless preview mode
 let connectedAccounts = [
   {
@@ -64,7 +56,7 @@ const getMetadata = () => ({
 
 // ── Endpoints ─────────────────────────────────────────────────────
 
-app.get(['/', '/api', '/api/'], (req, res) => {
+app.get(['/', '/api', '/api/'], (_req, res) => {
   res.json(getMetadata())
 })
 
@@ -105,7 +97,7 @@ app.post(['/auth/register', '/api/auth/register'], (req, res) => {
 })
 
 // GET /api/instagram/auth-url
-app.get(['/instagram/auth-url', '/api/instagram/auth-url'], (req, res) => {
+app.get(['/instagram/auth-url', '/api/instagram/auth-url'], (_req, res) => {
   try {
     const appId = process.env.META_APP_ID || process.env.INSTAGRAM_APP_ID || process.env.FACEBOOK_APP_ID
     const redirectUri = process.env.META_REDIRECT_URI || process.env.INSTAGRAM_REDIRECT_URI || 'https://insta-schedular-api.vercel.app/connect?success=true&count=1'
