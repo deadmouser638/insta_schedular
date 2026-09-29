@@ -7,22 +7,8 @@ app.use(cors({ origin: '*', credentials: true }))
 app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ extended: true }))
 
-let connectedAccounts = [
-  {
-    id: 'acc-demo-1',
-    igUserId: '17841400000000001',
-    igUsername: 'igscheduler_official',
-    tokenExpiresAt: new Date(Date.now() + 55 * 24 * 60 * 60 * 1000).toISOString(),
-    isActive: true,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    daysUntilExpiry: 55,
-    isExpired: false,
-    isExpiringSoon: false,
-    status: 'connected'
-  }
-]
-
+// Start with empty connected accounts array - accounts only exist when added by user
+let connectedAccounts = []
 let posts = []
 
 const getMetadata = () => ({
@@ -105,11 +91,12 @@ app.delete(['/accounts/:id', '/api/accounts/:id'], (req, res) => {
 })
 
 app.post(['/instagram/connect-manual', '/api/instagram/connect-manual'], (req, res) => {
-  const { pageAccessToken, igBusinessAccountId } = req.body || {}
+  const { pageAccessToken, igBusinessAccountId, username } = req.body || {}
+  const randomId = Math.floor(1000 + Math.random() * 9000)
   const newAccount = {
     id: 'acc-' + Date.now(),
-    igUserId: igBusinessAccountId || '17841400000000099',
-    igUsername: 'ig_account_' + (igBusinessAccountId ? String(igBusinessAccountId).slice(-4) : 'meta'),
+    igUserId: igBusinessAccountId || `1784140${randomId}0001`,
+    igUsername: username || (igBusinessAccountId ? `ig_user_${String(igBusinessAccountId).slice(-4)}` : `my_instagram_brand`),
     tokenExpiresAt: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString(),
     isActive: true,
     createdAt: new Date().toISOString(),
