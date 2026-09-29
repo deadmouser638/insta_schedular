@@ -1,4 +1,4 @@
-// Register ts-node for on-the-fly TypeScript module resolution in Node.js
+// Register ts-node for on-the-fly TypeScript compilation on Vercel
 try {
   require('ts-node').register({
     transpileOnly: true,
@@ -8,7 +8,7 @@ try {
     }
   })
 } catch (e) {
-  console.warn('[ts-node] Registration note:', e?.message || e)
+  console.warn('[ts-node]:', e?.message || e)
 }
 
 const express = require('express')
@@ -29,9 +29,9 @@ app.use(cookieParser())
 app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ extended: true }))
 
-// Root Route - Pure HTTP metadata response
+// Root Endpoint - Direct HTTP metadata response
 app.get('/', (_req, res) => {
-  const metadata = {
+  res.json({
     name: 'IG Scheduler Pro API',
     version: '1.0.0',
     status: 'online',
@@ -48,9 +48,7 @@ app.get('/', (_req, res) => {
       settings: '/api/settings',
       instagram: '/api/instagram'
     }
-  }
-
-  res.json(metadata)
+  })
 })
 
 app.get('/api/health', (_req, res) => {
@@ -70,43 +68,51 @@ app.get('/api/seo', (_req, res) => {
   })
 })
 
-function loadModule(relativePath) {
-  try {
-    return require(`../apps/api/dist/${relativePath}`)
-  } catch (distErr) {
-    try {
-      return require(`../apps/api/src/${relativePath}`)
-    } catch (srcErr) {
-      console.error(`[LoadModule Error] ${relativePath}:`, srcErr?.message || srcErr)
-      return {}
-    }
-  }
-}
-
-// Safely require routes
+// Static explicit requirements for Vercel NFT bundler
 try {
-  const { authRouter } = loadModule('routes/auth')
-  const { postsRouter } = loadModule('routes/posts')
-  const { publishRouter } = loadModule('routes/publish')
-  const { accountsRouter } = loadModule('routes/accounts')
-  const { captionsRouter } = loadModule('routes/captions')
-  const { uploadsRouter } = loadModule('routes/uploads')
-  const { settingsRouter } = loadModule('routes/settings')
-  const { instagramRouter } = loadModule('routes/instagram')
-  const { errorHandler } = loadModule('middleware/errorHandler')
-
+  const { authRouter } = require('../apps/api/src/routes/auth')
   if (authRouter) app.use('/api/auth', authRouter)
+} catch (e) { console.error('[Route Auth Error]:', e?.message || e) }
+
+try {
+  const { instagramRouter } = require('../apps/api/src/routes/instagram')
   if (instagramRouter) app.use('/api/instagram', instagramRouter)
+} catch (e) { console.error('[Route Instagram Error]:', e?.message || e) }
+
+try {
+  const { accountsRouter } = require('../apps/api/src/routes/accounts')
   if (accountsRouter) app.use('/api/accounts', accountsRouter)
+} catch (e) { console.error('[Route Accounts Error]:', e?.message || e) }
+
+try {
+  const { publishRouter } = require('../apps/api/src/routes/publish')
   if (publishRouter) app.use('/api/posts', publishRouter)
+} catch (e) { console.error('[Route Publish Error]:', e?.message || e) }
+
+try {
+  const { postsRouter } = require('../apps/api/src/routes/posts')
   if (postsRouter) app.use('/api/posts', postsRouter)
+} catch (e) { console.error('[Route Posts Error]:', e?.message || e) }
+
+try {
+  const { captionsRouter } = require('../apps/api/src/routes/captions')
   if (captionsRouter) app.use('/api/captions', captionsRouter)
+} catch (e) { console.error('[Route Captions Error]:', e?.message || e) }
+
+try {
+  const { uploadsRouter } = require('../apps/api/src/routes/uploads')
   if (uploadsRouter) app.use('/api/uploads', uploadsRouter)
+} catch (e) { console.error('[Route Uploads Error]:', e?.message || e) }
+
+try {
+  const { settingsRouter } = require('../apps/api/src/routes/settings')
   if (settingsRouter) app.use('/api/settings', settingsRouter)
+} catch (e) { console.error('[Route Settings Error]:', e?.message || e) }
+
+try {
+  const { errorHandler } = require('../apps/api/src/middleware/errorHandler')
   if (errorHandler) app.use(errorHandler)
-} catch (err) {
-  console.error('[Vercel Boot Error]:', err)
-}
+} catch (e) { console.error('[Middleware ErrorHandler Error]:', e?.message || e) }
 
 app.use((_req, res) => {
   res.status(404).json({ error: 'Route not found' })
