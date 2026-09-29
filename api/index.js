@@ -1,12 +1,22 @@
 const express = require('express')
 const cors = require('cors')
+const cookieParser = require('cookie-parser')
+const helmet = require('helmet')
 
 const app = express()
 
-app.use(cors({ origin: '*', credentials: true }))
+app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }))
+app.use(cors({
+  origin: '*',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}))
+app.use(cookieParser())
 app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ extended: true }))
 
+// Connected accounts data store
 let connectedAccounts = [
   {
     id: 'acc-demo-1',
@@ -25,45 +35,70 @@ let connectedAccounts = [
 
 let posts = []
 
-// API Catalog
-app.get(['/', '/api', '/api/'], (_req, res) => {
-  res.json({
-    name: 'IG Scheduler Pro API',
-    version: '1.0.0',
-    status: 'online',
-    description: 'Automated Instagram content scheduling backend API platform.',
-    website: 'https://insta-schedular-api.vercel.app',
-    endpoints: {
-      health: '/api/health',
-      seo: '/api/seo',
-      auth: '/api/auth',
-      accounts: '/api/accounts',
-      posts: '/api/posts',
-      captions: '/api/captions',
-      uploads: '/api/uploads',
-      settings: '/api/settings',
-      instagram: '/api/instagram'
-    }
-  })
+const getMetadata = () => ({
+  name: 'IG Scheduler Pro API',
+  version: '1.0.0',
+  status: 'online',
+  description: 'Automated Instagram content scheduling backend API platform.',
+  website: 'https://insta-schedular-api.vercel.app',
+  endpoints: {
+    health: '/api/health',
+    seo: '/api/seo',
+    auth: '/api/auth',
+    accounts: '/api/accounts',
+    posts: '/api/posts',
+    captions: '/api/captions',
+    uploads: '/api/uploads',
+    settings: '/api/settings',
+    instagram: '/api/instagram'
+  }
 })
 
-app.get(['/health', '/api/health'], (_req, res) => {
+// API Catalog
+app.get('/api', (_req, res) => {
+  res.json(getMetadata())
+})
+
+// Health check
+app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString(), environment: 'production' })
 })
 
-app.get(['/seo', '/api/seo'], (_req, res) => {
+// SEO metadata
+app.get('/api/seo', (_req, res) => {
   res.json({
     openGraph: {
       title: 'IG Scheduler Pro API',
       type: 'website',
       url: 'https://insta-schedular-api.vercel.app',
       description: 'Automated Instagram content scheduling platform API.'
-    }
+    },
+    twitter: {
+      card: 'summary_large_image',
+      site: '@igscheduler',
+      creator: '@igscheduler'
+    },
+    sitemap: 'https://insta-schedular-api.vercel.app/sitemap.xml',
+    robots: 'https://insta-schedular-api.vercel.app/robots.txt'
   })
 })
 
-// Instagram Auth URL
-app.get(['/instagram/auth-url', '/api/instagram/auth-url'], (_req, res) => {
+// Auth endpoints
+app.post('/api/auth/login', (req, res) => {
+  res.json({
+    accessToken: 'dev-jwt-token-sample',
+    user: { id: 'dev-user-id', email: req.body?.email || 'deadmouser638@example.com', name: 'deadmouser638' }
+  })
+})
+
+app.post('/api/auth/register', (req, res) => {
+  res.status(201).json({
+    user: { id: 'dev-user-id', email: req.body?.email || 'deadmouser638@example.com', name: req.body?.name || 'deadmouser638' }
+  })
+})
+
+// Instagram OAuth Auth URL generator
+app.get('/api/instagram/auth-url', (_req, res) => {
   const appId = process.env.META_APP_ID || process.env.INSTAGRAM_APP_ID || process.env.FACEBOOK_APP_ID
   const redirectUri = process.env.META_REDIRECT_URI || process.env.INSTAGRAM_REDIRECT_URI || 'https://insta-schedular-api.vercel.app/connect?success=true&count=1'
 
@@ -73,20 +108,29 @@ app.get(['/instagram/auth-url', '/api/instagram/auth-url'], (_req, res) => {
     return res.json({ authUrl })
   }
 
-  return res.json({ authUrl: 'https://insta-schedular-api.vercel.app/connect?success=true&count=1' })
+  // Fallback demo redirect URL
+  const fallbackUrl = 'https://insta-schedular-api.vercel.app/connect?success=true&count=1'
+  return res.json({ authUrl: fallbackUrl })
 })
 
-// Accounts
-app.get(['/accounts', '/api/accounts', '/instagram/accounts', '/api/instagram/accounts'], (_req, res) => {
+// Instagram accounts listing
+app.get('/api/instagram/accounts', (_req, res) => {
   res.json(connectedAccounts)
 })
 
-app.delete(['/accounts/:id', '/api/accounts/:id'], (req, res) => {
-  connectedAccounts = connectedAccounts.filter(a => a.id !== req.params.id)
+app.get('/api/accounts', (_req, res) => {
+  res.json(connectedAccounts)
+})
+
+// Disconnect account
+app.delete('/api/accounts/:id', (req, res) => {
+  const { id } = req.params
+  connectedAccounts = connectedAccounts.filter(a => a.id !== id)
   res.json({ message: 'Account disconnected successfully 👋' })
 })
 
-app.post(['/instagram/connect-manual', '/api/instagram/connect-manual'], (req, res) => {
+// Manual Instagram Connection
+app.post('/api/instagram/connect-manual', (req, res) => {
   const { pageAccessToken, igBusinessAccountId } = req.body || {}
   const newAccount = {
     id: 'acc-' + Date.now(),
@@ -105,23 +149,28 @@ app.post(['/instagram/connect-manual', '/api/instagram/connect-manual'], (req, r
   res.json({ message: 'Instagram Business Account connected successfully! 🎉', account: newAccount })
 })
 
-// Posts
-app.get(['/posts', '/api/posts'], (_req, res) => {
+// Posts endpoints
+app.get('/api/posts', (_req, res) => {
   res.json(posts)
 })
 
-app.post(['/posts', '/api/posts'], (req, res) => {
-  const newPost = { id: 'post-' + Date.now(), status: 'scheduled', createdAt: new Date().toISOString(), ...req.body }
+app.post('/api/posts', (req, res) => {
+  const newPost = { id: 'post-' + Date.now(), status: 'scheduled', createdAt: new Date().toISOString(), ...(req.body || {}) }
   posts.unshift(newPost)
   res.status(201).json(newPost)
 })
 
-// Captions
-app.post(['/captions/generate', '/api/captions/generate'], (_req, res) => {
+// Captions generation
+app.post('/api/captions/generate', (_req, res) => {
   res.json({
     caption: '🚀 Elevating social media automation with IG Scheduler Pro! ✨',
     hashtags: ['#InstagramScheduler', '#SocialMedia', '#Automation', '#IGScheduler']
   })
+})
+
+// 404 Handler for API routes
+app.use('/api/*', (_req, res) => {
+  res.status(404).json({ error: 'API route not found' })
 })
 
 module.exports = app
