@@ -35,8 +35,8 @@ const getMetadata = () => ({
   }
 })
 
-// Root & /api Handlers
-app.get(['/', '/api'], (req, res) => {
+// API Catalog Endpoint (handles /api)
+app.get(['/api', '/api/'], (req, res) => {
   const isHtml = req.headers.accept?.includes('text/html')
   const metadata = getMetadata()
 
