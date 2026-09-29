@@ -35,16 +35,16 @@ const getMetadata = () => ({
   }
 })
 
-// API Catalog Endpoint (strictly handles /api)
-app.get(['/api', '/api/'], (req, res) => {
+// API Catalog Endpoint (handles /api or root of API function)
+app.get(['/', '/api', '/api/'], (req, res) => {
   res.json(getMetadata())
 })
 
-app.get('/api/health', (_req, res) => {
+app.get(['/health', '/api/health'], (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString(), environment: 'production' })
 })
 
-app.get('/api/seo', (_req, res) => {
+app.get(['/seo', '/api/seo'], (_req, res) => {
   res.json({
     openGraph: {
       title: 'IG Scheduler Pro API',
@@ -63,43 +63,43 @@ app.get('/api/seo', (_req, res) => {
 })
 
 // Auth endpoints
-app.post('/api/auth/login', (req, res) => {
+app.post(['/auth/login', '/api/auth/login'], (req, res) => {
   res.json({
     accessToken: 'dev-jwt-token-sample',
     user: { id: 'dev-user-id', email: req.body?.email || 'dev@example.com', name: 'Dev User' }
   })
 })
 
-app.post('/api/auth/register', (req, res) => {
+app.post(['/auth/register', '/api/auth/register'], (req, res) => {
   res.status(201).json({
     user: { id: 'dev-user-id', email: req.body?.email || 'dev@example.com', name: req.body?.name || 'Dev User' }
   })
 })
 
 // Accounts endpoints
-app.get(['/api/accounts', '/api/instagram/accounts'], (_req, res) => {
+app.get(['/accounts', '/api/accounts', '/instagram/accounts', '/api/instagram/accounts'], (_req, res) => {
   res.json([])
 })
 
 // Posts endpoints
-app.get('/api/posts', (_req, res) => {
+app.get(['/posts', '/api/posts'], (_req, res) => {
   res.json([])
 })
 
-app.post('/api/posts', (req, res) => {
+app.post(['/posts', '/api/posts'], (req, res) => {
   res.status(201).json({ id: 'post-' + Date.now(), status: 'scheduled', ...req.body })
 })
 
 // Captions endpoint
-app.post('/api/captions/generate', (_req, res) => {
+app.post(['/captions/generate', '/api/captions/generate'], (_req, res) => {
   res.json({
     caption: '🚀 Elevating social media automation with IG Scheduler Pro! ✨',
     hashtags: ['#InstagramScheduler', '#SocialMedia', '#Automation']
   })
 })
 
-// 404 Handler for API routes
-app.use('/api/*', (_req, res) => {
+// 404 Handler for unrecognized API routes
+app.use((_req, res) => {
   res.status(404).json({ error: 'API route not found' })
 })
 
